@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost/escuela/backend/api/',
+  apiUrl: 'https://escueladominical.infinityfree.io/backend/api',
 };
