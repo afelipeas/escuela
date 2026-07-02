@@ -1,0 +1,167 @@
+<div class="admin-logs-container p-4">
+    @if (toastMsg) {
+    <div class="toast-success">
+        <span>✅</span> {{ toastMsg }}
+    </div>
+    }
+    @if (toastError) {
+    <div class="toast-error">
+        <span>⚠️</span> {{ toastError }}
+    </div>
+    }
+
+    <!-- BANNER DE BIENVENIDA -->
+    <div class="welcome-banner mb-4">
+        <div class="welcome-text">
+            <h2>📋 Bitácora y Logs de Sistema</h2>
+            <p>Supervisa en tiempo real las operaciones críticas, alertas, errores e inicios de sesión del sistema para auditoría.</p>
+        </div>
+        <div class="banner-actions">
+            <button class="btn-banner btn-export" (click)="exportarLogs()" title="Exportar Bitácora a JSON">
+                📥 Exportar Logs
+            </button>
+            <button class="btn-banner btn-clear" (click)="limpiarLogs()" title="Vaciar Bitácora">
+                🗑️ Limpiar Bitácora
+            </button>
+        </div>
+    </div>
+
+    <!-- BARRA DE FILTRADO Y BÚSQUEDA -->
+    <div class="filters-bar mb-4">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" [(ngModel)]="busqueda" (input)="onBusqueda()"
+                placeholder="Buscar por usuario, acción o detalles...">
+        </div>
+
+        <div class="select-box">
+            <select [(ngModel)]="nivelSeleccionado" (change)="filtrar()">
+                @for (niv of niveles; track niv.valor) {
+                    <option [value]="niv.valor">{{ niv.etiqueta }}</option>
+                }
+            </select>
+        </div>
+
+        <button class="btn-refresh" (click)="cargarLogs()" [disabled]="cargando">
+            🔄 Actualizar
+        </button>
+    </div>
+
+    <!-- CONTENEDOR DE LA TABLA DE LOGS -->
+    <div class="data-card">
+        @if (cargando && logs.length === 0) {
+            <div class="loading-state p-5 text-center">
+                <span class="spinner">⏳</span>
+                <p class="mt-2 text-muted">Consultando registros de auditoría del sistema...</p>
+            </div>
+        } @else {
+            <div class="table-responsive">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Nivel</th>
+                            <th>Usuario</th>
+                            <th>Dirección IP</th>
+                            <th>Acción Ejecutada</th>
+                            <th>Resumen de Detalles</th>
+                            <th class="text-center">Detalle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (log of logs; track log.id) {
+                            <tr (click)="abrirDetalles(log)" class="clickable-row">
+                                <td class="date-col">
+                                    <strong>{{ log.fecha | date:'dd/MM/yyyy' }}</strong>
+                                    <span class="time-hint">{{ log.fecha | date:'HH:mm:ss' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge-level" [class]="log.nivel.toLowerCase()">
+                                        {{ log.nivel }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="log-user">
+                                        <span class="avatar-mini">👤</span>
+                                        {{ log.usuario }}
+                                    </div>
+                                </td>
+                                <td><code class="ip-code">{{ log.ip }}</code></td>
+                                <td class="action-col"><strong>{{ log.accion }}</strong></td>
+                                <td class="details-preview text-muted">{{ log.detalles || 'Sin detalles adicionales' }}</td>
+                                <td class="text-center" (click)="$event.stopPropagation()">
+                                    <button class="btn-inspect" (click)="abrirDetalles(log)">
+                                        🔍 Ver
+                                    </button>
+                                </td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="7" class="text-center p-5 text-muted">
+                                    No se encontraron registros de logs que coincidan con la búsqueda.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- MODAL DE DETALLE DE LOG -->
+    @if (mostrarModal && logSeleccionado) {
+        <div class="modal-overlay" (click)="cerrarModal()">
+            <div class="modal-card" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>📋 Detalles del Evento de Auditoría</h3>
+                    <button class="btn-close-modal" (click)="cerrarModal()">×</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="log-details-grid">
+                        <div class="d-field">
+                            <span class="d-label">ID Evento</span>
+                            <span class="d-value">#{{ logSeleccionado.id }}</span>
+                        </div>
+                        <div class="d-field">
+                            <span class="d-label">Fecha y Hora Completa</span>
+                            <span class="d-value">{{ logSeleccionado.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+                        </div>
+                        <div class="d-field">
+                            <span class="d-label">Severidad / Nivel</span>
+                            <span class="badge-level" [class]="logSeleccionado.nivel.toLowerCase()">
+                                {{ logSeleccionado.nivel }}
+                            </span>
+                        </div>
+                        <div class="d-field">
+                            <span class="d-label">Usuario</span>
+                            <span class="d-value fw-bold">👤 {{ logSeleccionado.usuario }}</span>
+                        </div>
+                        <div class="d-field">
+                            <span class="d-label">Dirección IP del Cliente</span>
+                            <span class="d-value"><code class="ip-code">{{ logSeleccionado.ip }}</code></span>
+                        </div>
+                    </div>
+
+                    <div class="details-section mt-4">
+                        <span class="d-label">Acción Ejecutada</span>
+                        <div class="action-value-box">
+                            {{ logSeleccionado.accion }}
+                        </div>
+                    </div>
+
+                    <div class="details-section mt-3">
+                        <span class="d-label">Descripción Extendida / Traza del Evento</span>
+                        <pre class="details-pre-box">{{ logSeleccionado.detalles || 'No se registraron metadatos específicos.' }}</pre>
+                    </div>
+
+                    <div class="modal-footer mt-4">
+                        <button type="button" class="btn-close-footer" (click)="cerrarModal()">
+                            Cerrar Detalles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

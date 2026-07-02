@@ -1,0 +1,38 @@
+# ==================== DEPENDENCIAS ====================
+node_modules/
+frontend/node_modules/
+backend/vendor/   # si usas composer
+
+# ==================== BUILD ====================
+dist/
+frontend/dist/
+build/
+
+# ==================== ARCHIVOS TEMPORALES ====================
+.env
+*.log
+*.tmp
+scratch_*.php
+test*.php
+debug*.php
+
+# ==================== CACHÉS Y CONFIG ====================
+.angular/
+.cache/
+.angular/cache/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ==================== BASE DE DATOS ====================
+*.sql.bak
+*.bak
+
+# ==================== DOCUMENTACIÓN (opcional) ====================
+*.md
+AGENTS.md
+
+# ==================== OTROS ====================
+*.swp
+*.swo

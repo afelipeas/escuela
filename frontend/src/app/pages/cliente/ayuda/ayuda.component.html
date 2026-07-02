@@ -1,0 +1,157 @@
+<div class="cliente-ayuda-container p-4">
+    <!-- BANNER DE ENCABEZADO -->
+    <div class="support-banner mb-4">
+        <div class="banner-content">
+            <h2>🎧 Centro de Ayuda y Soporte</h2>
+            <p>Estamos aquí para ayudarte. Encuentra respuestas rápidas en nuestro centro de auto-servicio o envía un ticket de soporte técnico.</p>
+        </div>
+    </div>
+
+    <div class="support-content-layout">
+        <!-- BLOQUE IZQUIERDO: PREGUNTAS FRECUENTES (FAQs) -->
+        <div class="faqs-section">
+            <h3 class="block-title">🙋‍♂️ Preguntas Frecuentes</h3>
+            <p class="block-desc">Consulta las dudas más comunes de nuestros estudiantes sobre clases, puntos y la tienda virtual.</p>
+
+            <div class="faqs-accordion">
+                @for (faq of faqs; track $index) {
+                    <div class="faq-card" [class.open]="activeFaqIndex === $index">
+                        <div class="faq-question-header" (click)="toggleFaq($index)">
+                            <span class="question-text">{{ faq.pregunta }}</span>
+                            <span class="toggle-icon">{{ activeFaqIndex === $index ? '▲' : '▼' }}</span>
+                        </div>
+                        
+                        <div class="faq-answer-body" [style.max-height]="activeFaqIndex === $index ? '200px' : '0px'">
+                            <p>{{ faq.respuesta }}</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- CARDS DE CONTACTO DIRECTO -->
+            <div class="direct-contact-grid mt-4">
+                <div class="contact-mini-card">
+                    <span class="contact-icon">📧</span>
+                    <h4>Correo Electrónico</h4>
+                    <p>soporte@escueladefe.com</p>
+                    <span class="response-time">Respuestas en < 12 hrs</span>
+                </div>
+                <div class="contact-mini-card">
+                    <span class="contact-icon">📞</span>
+                    <h4>Línea Telefónica</h4>
+                    <p>+57 (300) 123-4567</p>
+                    <span class="response-time">L-V: 8:00 AM - 6:00 PM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOQUE DERECHO: FORMULARIO DE TICKET DE SOPORTE -->
+        <div class="ticket-section">
+            <div class="ticket-form-card">
+                <h3 class="block-title border-orange">📩 Crear Ticket de Soporte</h3>
+                <p class="block-desc">¿No encontraste solución en las preguntas frecuentes? Registra una solicitud técnica oficial para que nuestro administrador la revise.</p>
+
+                <!-- ALERTAS DE ÉXITO O ERROR -->
+                @if (mensajeExito) {
+                    <div class="alert alert-success-premium mb-3 animate-slide">
+                        <span class="alert-icon">✓</span>
+                        <div class="alert-text">
+                            <strong>¡Enviado con Éxito!</strong>
+                            <p>{{ mensajeExito }}</p>
+                        </div>
+                    </div>
+                }
+
+                @if (mensajeError) {
+                    <div class="alert alert-danger-premium mb-3 animate-slide">
+                        <span class="alert-icon">⚠️</span>
+                        <div class="alert-text">
+                            <strong>Hubo un problema</strong>
+                            <p>{{ mensajeError }}</p>
+                        </div>
+                    </div>
+                }
+
+                <form (ngSubmit)="enviarFormulario()">
+                    <div class="form-group mb-3">
+                        <label for="categoria">Categoría del Problema</label>
+                        <select id="categoria" name="categoria" [(ngModel)]="categoria" required class="form-control-premium">
+                            <option value="" disabled selected>-- Selecciona un motivo --</option>
+                            <option value="Problema con Canjes de Tienda">🛒 Problema con Canjes de Tienda</option>
+                            <option value="Problema con Puntos Fe">💎 Problema con Saldo de Puntos Fe</option>
+                            <option value="Calificaciones y Notas">🎓 Incoherencia en Calificaciones y Notas</option>
+                            <option value="Soporte Técnico de Plataforma">💻 Falla Técnica en la Plataforma</option>
+                            <option value="Otro Motivo">❓ Otro Motivo / Consulta General</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="asunto">Asunto Breve</label>
+                        <input type="text" id="asunto" name="asunto" [(ngModel)]="asunto" placeholder="Ej: Mi canje figura pendiente de envío..." required class="form-control-premium">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="mensaje">Descripción Detallada</label>
+                        <textarea id="mensaje" name="mensaje" [(ngModel)]="mensaje" rows="5" placeholder="Escribe aquí de forma detallada tu consulta o problema..." required class="form-control-premium"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit-support" [disabled]="enviando">
+                        @if (enviando) {
+                            <span class="spinner-small">⏳</span> Procesando...
+                        } @else {
+                            🚀 Enviar Solicitud a Soporte
+                        }
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: MIS TICKETS DE SOPORTE -->
+    <div class="mis-tickets-section mt-4">
+        <h3 class="block-title">📋 Mis Tickets de Soporte</h3>
+        <p class="block-desc">Revisa el estado de tus solicitudes y las respuestas de nuestro equipo.</p>
+
+        @if (cargandoTickets) {
+            <div class="text-center py-4">
+                <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                <p class="text-muted small mt-2">Cargando tus tickets...</p>
+            </div>
+        } @else if (tickets.length === 0) {
+            <div class="text-center py-4 text-muted">
+                <span class="fs-2">📭</span>
+                <p class="mt-2 small">Aún no has creado ningún ticket de soporte.</p>
+            </div>
+        } @else {
+            <div class="tickets-list">
+                @for (ticket of tickets; track ticket.id) {
+                    <div class="ticket-card" [class.resuelto]="ticket.estado === 'Resuelto'">
+                        <div class="ticket-header">
+                            <div class="ticket-meta">
+                                <span class="ticket-id">#{{ ticket.id }}</span>
+                                <span class="ticket-date">{{ ticket.fecha }}</span>
+                            </div>
+                            <span class="ticket-status" [class]="ticket.estado === 'Resuelto' ? 'status-resuelto' : 'status-pendiente'">
+                                {{ ticket.estado }}
+                            </span>
+                        </div>
+                        <div class="ticket-body">
+                            <p class="ticket-category">{{ ticket.categoria }}</p>
+                            <h5 class="ticket-subject">{{ ticket.asunto }}</h5>
+                            <p class="ticket-message">{{ ticket.mensaje }}</p>
+                        </div>
+                        @if (ticket.respuesta) {
+                            <div class="ticket-response">
+                                <div class="response-header">
+                                    <span class="response-icon">💬</span>
+                                    <strong>Respuesta de Soporte</strong>
+                                </div>
+                                <p class="response-text">{{ ticket.respuesta }}</p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

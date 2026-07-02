@@ -1,0 +1,211 @@
+:host {
+    display: block;
+    --sidebar-width: 260px;
+}
+
+.layout-container {
+    display: flex;
+    min-height: 100vh;
+    background: #fdfaf6;
+}
+
+.main-content {
+    flex-grow: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+}
+
+.main-header {
+    height: 70px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.content-wrapper {
+    flex-grow: 1;
+}
+
+/* --- ACCIONES DEL HEADER (COMÚN) --- */
+.header-action-container {
+    position: relative;
+}
+
+.action-pill {
+    width: 42px;
+    height: 42px;
+    background: #fff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
+}
+
+.action-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: #ff9800;
+}
+
+.badge-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    background: #ff4757;
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    animation: pulse 2s infinite;
+}
+
+/* PILL DE USUARIO */
+.user-action-pill {
+    padding: 6px 15px;
+    background: white;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s;
+}
+
+.user-action-pill:hover {
+    border-color: #ff9800;
+    background: #fffcf8;
+}
+
+.user-avatar-mini {
+    font-size: 1.5rem;
+    background: #f8fafc;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chevron-icon {
+    font-size: 0.6rem;
+    color: #94a3b8;
+    margin-left: 5px;
+}
+
+/* DROPDOWNS GENERALES */
+.header-dropdown {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    width: 320px;
+    background: white;
+    border-radius: 20px;
+    z-index: 1000;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.user-dropdown {
+    width: 260px;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-header {
+    padding: 15px 20px;
+    background: #fff9f0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.bg-light-orange {
+    background: #fffbf5;
+}
+
+.dropdown-link-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.dropdown-link-item:hover {
+    background: #fff7ed;
+    color: #ff9800;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 8px 0;
+}
+
+.btn-logout-action {
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+}
+
+.btn-logout-action:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+/* NOTIFICACIONES */
+.dropdown-body {
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: 14px 20px;
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f8fafc;
+}
+
+.notif-item.unread { background: rgba(255, 152, 0, 0.03); }
+
+.notif-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 2px; }
+.notif-msg { font-size: 0.75rem; color: #64748b; line-height: 1.3; }
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+}
+
+@media (max-width: 991px) {
+    :host { --sidebar-width: 0px; }
+    .main-content { margin-left: 0; }
+}

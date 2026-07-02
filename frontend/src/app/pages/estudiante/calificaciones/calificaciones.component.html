@@ -1,0 +1,81 @@
+<div class="calificaciones-container p-4">
+    
+    <header class="report-header mb-5 p-4 rounded-4 bg-white shadow-sm d-flex justify-content-between align-items-center border-start border-5 border-marron">
+        <div>
+            <h1 class="h3 fw-bold text-marron mb-1">Mi Reporte Académico</h1>
+            <p class="text-muted small mb-0">Resumen detallado de tu progreso y calificaciones</p>
+        </div>
+        <div class="text-end">
+            <span class="d-block smaller text-muted text-uppercase fw-bold">Promedio de Avance</span>
+            <span class="display-6 fw-bold text-marron">{{ promedioGeneral() }}%</span>
+        </div>
+    </header>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light-soft text-marron">
+                    <tr>
+                        <th class="p-3 border-0">Curso / Materia</th>
+                        <th class="p-3 border-0">Instructor</th>
+                        <th class="p-3 border-0 text-center">Progreso</th>
+                        <th class="p-3 border-0 text-center">Estado</th>
+                        <th class="p-3 border-0 text-center">Certificado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of reporteAcademico(); track item.id) {
+                    <tr>
+                        <td class="p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fs-3">{{ item.icono }}</span>
+                                <span class="fw-bold">{{ item.titulo }}</span>
+                            </div>
+                        </td>
+                        <td class="p-3 text-muted small">{{ item.instructor }}</td>
+                        <td class="p-3">
+                            <div class="progress-mini rounded-pill overflow-hidden bg-light mb-1" style="height: 6px;">
+                                <div class="progress-fill bg-marron" [style.width]="item.progreso + '%'"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="smaller fw-bold text-marron">{{ item.progreso }}%</span>
+                                <span class="smaller text-muted fs-7">{{ item.lecciones_completadas || 0 }} / {{ item.total_lecciones || 0 }} lecc.</span>
+                            </div>
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="badge rounded-pill px-3 py-2" 
+                                  [class.bg-success-subtle]="item.estado === 'Completado'"
+                                  [class.text-success]="item.estado === 'Completado'"
+                                  [class.bg-warning-subtle]="item.estado === 'En Curso'"
+                                  [class.text-warning]="item.estado === 'En Curso'">
+                                {{ item.estado }}
+                            </span>
+                        </td>
+                        <td class="p-3 text-center">
+                            @if (item.estado === 'Completado') {
+                                <button class="btn btn-outline-marron btn-sm rounded-pill px-3">
+                                    📜 Descargar
+                                </button>
+                            } @else {
+                                <span class="smaller text-muted italic">Pendiente</span>
+                            }
+                        </td>
+                    </tr>
+                    } @empty {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <p class="text-muted">Aún no tienes cursos con calificaciones registradas.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-5 p-4 bg-crema rounded-4 border-dashed text-center">
+        <h4 class="h6 fw-bold text-marron mb-2">💡 Nota del Sistema</h4>
+        <p class="small text-muted mb-0">Las calificaciones se basan en la finalización de lecciones y la participación en clase. ¡Sigue esforzándote!</p>
+    </div>
+
+</div>

@@ -1,0 +1,225 @@
+<div class="productos-container p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-marron mb-1">🛍️ Gestión de Productos</h2>
+            <p class="text-muted mb-0">Administra el catálogo de la tienda virtual</p>
+        </div>
+        <button class="btn btn-naranja px-4 py-2 rounded-pill fw-bold" (click)="abrirNuevoModal()">
+            + Nuevo Producto
+        </button>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-muted">Buscar</label>
+                <input type="text" class="form-control rounded-pill" placeholder="Nombre o categoría..."
+                    [ngModel]="busqueda" (ngModelChange)="onBusquedaChange($event)">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted">Categoría</label>
+                <select class="form-select rounded-pill" [(ngModel)]="filtroCategoria" (ngModelChange)="onCategoriaChange()">
+                    <option value="Todos">Todas</option>
+                    @for (cat of categorias; track cat) {
+                        <option [value]="cat">{{ cat }}</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="form-check form-switch mt-4">
+                    <input class="form-check-input" type="checkbox" id="mostrarInactivos"
+                        [(ngModel)]="mostrarInactivos" (ngModelChange)="onInactivosChange()">
+                    <label class="form-check-label small fw-bold text-muted" for="mostrarInactivos">
+                        Mostrar inactivos
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2 text-end">
+                <span class="badge bg-secondary rounded-pill">{{ productosFiltrados.length }} productos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    @if (cargando && productos.length === 0) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-warning" role="status"></div>
+            <p class="text-muted mt-2">Cargando productos...</p>
+        </div>
+    } @else if (productosFiltrados.length === 0) {
+        <div class="text-center py-5">
+            <div class="fs-1 mb-3">📦</div>
+            <h4 class="text-muted">No hay productos para mostrar</h4>
+            <button class="btn btn-naranja rounded-pill mt-2" (click)="abrirNuevoModal()">Crear primer producto</button>
+        </div>
+    } @else {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-3">Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Costo</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th class="text-end pe-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (p of productosFiltrados; track p.id) {
+                            <tr [class.table-active]="!p.activo">
+                                <td class="ps-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fs-4">
+                                            @if (p.imagen_url && p.imagen_url.startsWith('http')) {
+                                                <img [src]="p.imagen_url" alt="" class="rounded" style="width:32px;height:32px;object-fit:cover;">
+                                            } @else {
+                                                {{ p.imagen_url || '🎁' }}
+                                            }
+                                        </span>
+                                        <div>
+                                            <span class="fw-bold">{{ p.nombre }}</span>
+                                            @if (p.etiqueta) {
+                                                <span class="badge bg-warning text-dark ms-2 small">{{ p.etiqueta }}</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="text-muted">{{ p.categoria || '—' }}</span></td>
+                                <td class="fw-bold text-success">{{ formatearPrecio(p.precio) }}</td>
+                                <td class="text-muted">{{ p.precio_costo ? formatearPrecio(p.precio_costo) : '—' }}</td>
+                                <td>
+                                    <span [class]="p.stock_actual <= 0 ? 'text-danger fw-bold' : (p.stock_actual < p.stock_minimo ? 'text-warning fw-bold' : 'text-muted')">
+                                        {{ p.stock_actual }}
+                                    </span>
+                                    <small class="text-muted"> / {{ p.stock_minimo }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill" [class]="p.activo ? 'bg-success' : 'bg-secondary'">
+                                        {{ p.activo ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary rounded-start" title="Editar"
+                                            (click)="abrirEditarModal(p)">✏️</button>
+                                        <button class="btn btn-outline-warning" title="Activar/Desactivar"
+                                            (click)="toggleActivo(p)">
+                                            {{ p.activo ? '🔒' : '🔓' }}
+                                        </button>
+                                        <button class="btn btn-outline-danger rounded-end" title="Eliminar"
+                                            (click)="eliminarProducto(p)">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <!-- MODAL CREAR / EDITAR -->
+    @if (mostrarModal) {
+        <div class="modal-overlay" (click)="cerrarModal()">
+            <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>{{ editando ? '✏️ Editar Producto' : '➕ Nuevo Producto' }}</h3>
+                    <button class="btn-close-modal" (click)="cerrarModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    @if (mensajeError) {
+                        <div class="alert alert-danger rounded-pill text-center py-2">{{ mensajeError }}</div>
+                    }
+                    @if (mensajeExito) {
+                        <div class="alert alert-success rounded-pill text-center py-2">{{ mensajeExito }}</div>
+                    }
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Nombre *</label>
+                            <input type="text" class="form-control" [(ngModel)]="formProducto.nombre"
+                                placeholder="Nombre del producto">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Etiqueta</label>
+                            <select class="form-select" [(ngModel)]="formProducto.etiqueta">
+                                @for (e of etiquetas; track e) {
+                                    <option [value]="e">{{ e || 'Sin etiqueta' }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Descripción</label>
+                            <textarea class="form-control" rows="2" [(ngModel)]="formProducto.descripcion"
+                                placeholder="Descripción del producto"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Precio Venta *</label>
+                            <input type="number" class="form-control" [(ngModel)]="formProducto.precio" min="0">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Precio Costo</label>
+                            <input type="number" class="form-control" [(ngModel)]="formProducto.precio_costo" min="0">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Categoría</label>
+                            <select class="form-select" [(ngModel)]="formProducto.categoria">
+                                <option value="">Seleccionar...</option>
+                                @for (cat of categorias; track cat) {
+                                    <option [value]="cat">{{ cat }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Imagen del Producto</label>
+                            <div class="d-flex gap-3 align-items-start">
+                                <div class="flex-grow-1">
+                                    <input type="file" class="form-control" accept="image/*"
+                                        (change)="onFileSelected($event)" [disabled]="subiendoImagen">
+                                    @if (subiendoImagen) {
+                                        <small class="text-muted mt-1 d-block">Subiendo imagen...</small>
+                                    }
+                                    <small class="text-muted mt-1 d-block">JPG, PNG, GIF o WEBP. Máx. 5MB</small>
+                                    <div class="mt-2">
+                                        <label class="form-label small fw-bold text-muted">O escribir emoji/URL:</label>
+                                        <input type="text" class="form-control" [(ngModel)]="formProducto.imagen_url"
+                                            placeholder="Ej: 📖 o https://...">
+                                    </div>
+                                </div>
+                                @if (previewImagen) {
+                                    <div class="preview-box">
+                                        <img [src]="previewImagen" alt="Preview"
+                                            class="rounded" style="width:80px;height:80px;object-fit:cover;border:2px solid #E2E8F0;">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Stock Actual</label>
+                            <input type="number" class="form-control" [(ngModel)]="formProducto.stock_actual" min="0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold">Stock Mínimo</label>
+                            <input type="number" class="form-control" [(ngModel)]="formProducto.stock_minimo" min="0">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Especificaciones</label>
+                            <textarea class="form-control" rows="2" [(ngModel)]="formProducto.especificaciones"
+                                placeholder="Separadas por coma: Páginas: 100, Tamaño: A4, ..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary rounded-pill px-4" (click)="cerrarModal()">Cancelar</button>
+                    <button class="btn btn-naranja rounded-pill px-4 fw-bold" (click)="guardarProducto()" [disabled]="cargando">
+                        {{ cargando ? 'Guardando...' : (editando ? 'Actualizar' : 'Crear Producto') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

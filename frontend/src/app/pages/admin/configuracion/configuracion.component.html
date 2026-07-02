@@ -1,0 +1,243 @@
+<div class="admin-config-container p-4">
+    @if (toastMsg) {
+    <div class="toast-success">
+        <span>✅</span> {{ toastMsg }}
+    </div>
+    }
+
+    <!-- BANNER DE BIENVENIDA -->
+    <div class="welcome-banner mb-4">
+        <div class="welcome-text">
+            <h2>⚙️ Panel de Configuración</h2>
+            <p>Configura las políticas, reglas de gamificación, estado de módulos y optimización de la plataforma.</p>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIONES Y ALERTAS -->
+    @if (mensajeExito) {
+        <div class="alert alert-success mb-4">
+            ✅ {{ mensajeExito }}
+        </div>
+    }
+    @if (mensajeError) {
+        <div class="alert alert-danger mb-4">
+            ⚠️ {{ mensajeError }}
+        </div>
+    }
+
+    <div class="config-layout">
+        <!-- NAVEGACIÓN LATERAL DE TABS -->
+        <div class="tabs-nav">
+            <button [class.active]="tabActiva === 'general'" (click)="cambiarTab('general')">
+                <span class="tab-icon">🌐</span> General
+            </button>
+            <button [class.active]="tabActiva === 'puntos'" (click)="cambiarTab('puntos')">
+                <span class="tab-icon">💎</span> Reglas de Puntos
+            </button>
+            <button [class.active]="tabActiva === 'toggles'" (click)="cambiarTab('toggles')">
+                <span class="tab-icon">⚙️</span> Módulos Activos
+            </button>
+            <button [class.active]="tabActiva === 'herramientas'" (click)="cambiarTab('herramientas')">
+                <span class="tab-icon">🛠️</span> Mantenimiento DB
+            </button>
+        </div>
+
+        <!-- CONTENIDO DE LAS TABS -->
+        <div class="tab-content-card">
+            @if (cargando) {
+                <div class="loading-state p-5 text-center">
+                    <span class="spinner">⏳</span>
+                    <p class="mt-2 text-muted">Cargando la configuración del sistema...</p>
+                </div>
+            } @else {
+                <form (ngSubmit)="guardar()" class="config-form">
+                    
+                    <!-- TAB 1: CONFIGURACIÓN GENERAL -->
+                    @if (tabActiva === 'general') {
+                        <div class="tab-pane">
+                            <h3>🌐 Configuración General del Sitio</h3>
+                            <p class="section-desc">Información básica del sistema que se visualiza en los encabezados y banners.</p>
+                            
+                            <div class="form-group mb-3">
+                                <label>Nombre de la Plataforma</label>
+                                <input type="text" [(ngModel)]="config.general.nombre_plataforma" name="nombre_plataforma" required
+                                    placeholder="ej: Escuela Dominical Virtual">
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label>Lema o Mensaje del Banner</label>
+                                <textarea [(ngModel)]="config.general.lema" name="lema" rows="3"
+                                    placeholder="Mensaje de bienvenida principal..."></textarea>
+                            </div>
+
+                            <div class="form-row mb-3">
+                                <div class="form-group col-md-6">
+                                    <label>Periodo Escolar / Académico Activo</label>
+                                    <input type="text" [(ngModel)]="config.general.periodo_activo" name="periodo_activo" required
+                                        placeholder="ej: Primer Semestre 2026">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Correo Electrónico de Soporte</label>
+                                    <input type="email" [(ngModel)]="config.general.email_contacto" name="email_contacto" required
+                                        placeholder="ej: soporte@escuela.com">
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- TAB 2: REGLAS Y PUNTOS (GAMIFICACIÓN) -->
+                    @if (tabActiva === 'puntos') {
+                        <div class="tab-pane">
+                            <h3>💎 Políticas y Distribución de Puntos</h3>
+                            <p class="section-desc">Define el número de "Puntos Fe" que los estudiantes reciben al interactuar y completar tareas.</p>
+
+                            <div class="form-row mb-3">
+                                <div class="form-group col-md-4">
+                                    <label>Puntos por Lección Completada</label>
+                                    <div class="input-with-suffix">
+                                        <input type="number" [(ngModel)]="config.puntos.puntos_leccion" name="puntos_leccion" required min="0">
+                                        <span class="suffix">Pts</span>
+                                    </div>
+                                    <span class="field-hint">Al finalizar todas las lecturas de una lección.</span>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label>Puntos por Curso Finalizado</label>
+                                    <div class="input-with-suffix">
+                                        <input type="number" [(ngModel)]="config.puntos.puntos_curso" name="puntos_curso" required min="0">
+                                        <span class="suffix">Pts</span>
+                                    </div>
+                                    <span class="field-hint">Al completar todas las lecciones del curso.</span>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label>Puntos por Asistencia a Clase</label>
+                                    <div class="input-with-suffix">
+                                        <input type="number" [(ngModel)]="config.puntos.puntos_asistencia" name="puntos_asistencia" required min="0">
+                                        <span class="suffix">Pts</span>
+                                    </div>
+                                    <span class="field-hint">Por confirmar presencia en clases en vivo.</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- TAB 3: MÓDULOS DE SISTEMA (TOGGLES) -->
+                    @if (tabActiva === 'toggles') {
+                        <div class="tab-pane">
+                            <h3>⚙️ Activación y Desactivación de Módulos</h3>
+                            <p class="section-desc">Habilita o deshabilita secciones de la aplicación en tiempo real según las necesidades.</p>
+
+                            <div class="toggles-grid">
+                                <div class="toggle-card">
+                                    <div class="toggle-info">
+                                        <h4>🛒 Tienda Virtual y Canje de Logros</h4>
+                                        <p>Permite a los estudiantes canjear sus Puntos Fe por incentivos físicos en el catálogo virtual.</p>
+                                    </div>
+                                    <label class="switch-container">
+                                        <input type="checkbox" [(ngModel)]="config.toggles.tienda_activa" name="tienda_activa">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-card">
+                                    <div class="toggle-info">
+                                        <h4>🔔 Notificaciones y Clases Programadas</h4>
+                                        <p>Envía avisos de correo y notificaciones push automáticas sobre las clases agendadas.</p>
+                                    </div>
+                                    <label class="switch-container">
+                                        <input type="checkbox" [(ngModel)]="config.toggles.notificaciones_activas" name="notificaciones_activas">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-card">
+                                    <div class="toggle-info">
+                                        <h4>💬 Sección de Preguntas y Comentarios</h4>
+                                        <p>Habilita los foros interactivos de discusión y comentarios dentro de las lecciones del estudiante.</p>
+                                    </div>
+                                    <label class="switch-container">
+                                        <input type="checkbox" [(ngModel)]="config.toggles.comentarios_lecciones" name="comentarios_lecciones">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-card">
+                                    <div class="toggle-info">
+                                        <h4>📝 Registro Libre de Nuevos Estudiantes</h4>
+                                        <p>Permite la auto-inscripción de usuarios externos desde el botón de la página de inicio pública.</p>
+                                    </div>
+                                    <label class="switch-container">
+                                        <input type="checkbox" [(ngModel)]="config.toggles.registro_abierto" name="registro_abierto">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- TAB 4: MANTENIMIENTO Y BASE DE DATOS -->
+                    @if (tabActiva === 'herramientas') {
+                        <div class="tab-pane">
+                            <h3>🛠️ Herramientas de Mantenimiento de Base de Datos</h3>
+                            <p class="section-desc">Optimiza la indexación, borra espacios en blanco fragmentados en tablas y acelera las consultas del sistema.</p>
+
+                            <div class="maintenance-box mb-4">
+                                <div class="m-info">
+                                    <h4>Desfragmentación y Optimización de Tablas</h4>
+                                    <p>Ejecuta una desfragmentación SQL a fondo en las tablas de usuarios, clases, pedidos y logs.</p>
+                                </div>
+                                <button type="button" class="btn-optimize" (click)="optimizarDB()" [disabled]="cargandoOpt">
+                                    @if (cargandoOpt) {
+                                        Optimizando...
+                                    } @else {
+                                        🚀 Optimizar Tablas Ahora
+                                    }
+                                </button>
+                            </div>
+
+                            @if (tablasOptimizadas.length > 0) {
+                                <div class="optimization-results mt-4">
+                                    <h5>Resultados del Proceso de Optimización</h5>
+                                    <table class="table results-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre de la Tabla</th>
+                                                <th>Estado Retornado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (t of tablasOptimizadas; track t.tabla) {
+                                                <tr>
+                                                    <td><code>{{ t.tabla }}</code></td>
+                                                    <td>
+                                                        <span class="status-pill text-success fw-bold">
+                                                            {{ t.estado }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <!-- PIE DE FORMULARIO CON ACCIONES -->
+                    @if (tabActiva !== 'herramientas') {
+                        <div class="config-footer mt-4">
+                            <button type="submit" class="btn-guardar" [disabled]="cargando">
+                                @if (cargando) {
+                                    Guardando...
+                                } @else {
+                                    💾 Guardar Cambios
+                                }
+                            </button>
+                        </div>
+                    }
+                </form>
+            }
+        </div>
+    </div>
+</div>

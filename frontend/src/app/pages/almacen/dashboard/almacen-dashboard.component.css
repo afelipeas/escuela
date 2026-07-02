@@ -1,0 +1,373 @@
+/* ================================================================
+   ALMACÉN DASHBOARD — Estilos del Panel Logístico
+   Enfoque en orden, eficiencia y alertas visuales
+   ================================================================ */
+
+/* BUSCADOR DE STOCK */
+.search-stock-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon-stock {
+    position: absolute;
+    left: 12px;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.search-stock-input {
+    padding: 8px 14px 8px 36px;
+    border: 1px solid #E5E7EB;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    outline: none;
+    background: #F9FAFB;
+    width: 250px;
+    transition: all 0.2s;
+}
+
+.search-stock-input:focus {
+    border-color: var(--color-naranja-principal, #F97316);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* BADGE DE ESTADO EN TABLA DE INVENTARIO COMPLETO */
+.badge-status-inv {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-status-inv.success {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-status-inv.warning {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-status-inv.danger {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* TEXT MARRON */
+.text-marron {
+    color: var(--color-marron-oscuro);
+}
+
+
+.almacen-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #F3F4F6;
+}
+
+.text-marron {
+    color: var(--color-marron-oscuro);
+}
+
+/* SIDEBAR */
+.almacen-sidebar {
+    width: 250px;
+    background-color: #1F2937;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.logo-almacen {
+    width: 45px;
+    height: 45px;
+    background: var(--color-naranja-principal);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.logo-info .l-title {
+    display: block;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #F9FAFB;
+}
+
+.logo-info .l-tag {
+    font-size: 0.65rem;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-links {
+    flex-grow: 1;
+}
+
+.s-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.5rem;
+    color: #9CA3AF;
+    text-decoration: none !important;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.s-link:hover,
+.s-link.active {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-left-color: var(--color-naranja-principal);
+}
+
+.btn-logout-a {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: none;
+    color: #FCA5A5;
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+/* MAIN CONTENT */
+.almacen-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-header-a {
+    height: 70px;
+    background-color: white;
+}
+
+.search-a input {
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    min-width: 300px;
+    outline: none;
+}
+
+.u-avatar-a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-fondo-crema);
+    border: 1px solid var(--color-ambar-claro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.u-name-t {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.u-role-t {
+    font-size: 0.7rem;
+    color: #6B7280;
+    text-transform: uppercase;
+}
+
+/* KPI CARDS */
+.kpi-a-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F3F4F6;
+}
+
+.kpi-a-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-a-icon {
+    font-size: 1.5rem;
+}
+
+.kpi-a-trend {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.kpi-critico .kpi-a-trend {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+.kpi-normal .kpi-a-trend {
+    background: #F3F4F6;
+    color: #4B5563;
+}
+
+.kpi-positivo .kpi-a-trend {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.kpi-a-val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.kpi-a-lab {
+    color: #6B7280;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* DATA CARDS & TABLES */
+.white-card {
+    background: white;
+    border-radius: 20px;
+}
+
+.btn-naranja-a {
+    background: var(--color-naranja-principal);
+    color: white;
+    font-weight: 700;
+}
+
+.almacen-table th {
+    border: none;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    padding: 1rem;
+}
+
+.almacen-table td {
+    padding: 1rem;
+    border-top: 1px solid #F3F4F6;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.progress-a {
+    height: 8px;
+    background: #F3F4F6;
+    border-radius: 4px;
+    position: relative;
+}
+
+.progress-a-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--color-rojo-calido);
+}
+
+/* TIMELINE */
+.mov-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.mov-type-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mov-type-icon.entrada {
+    background: #D1FAE5;
+}
+
+.mov-type-icon.salida {
+    background: #FEE2E2;
+}
+
+.mov-type-icon.ajuste {
+    background: #FEF3C7;
+}
+
+.mov-info {
+    flex-grow: 1;
+}
+
+.mov-title {
+    font-size: 0.85rem;
+    color: #374151;
+}
+
+.mov-meta {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+}
+
+.mov-qty {
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.mov-qty.plus {
+    color: #059669;
+}
+
+.mov-qty.minus {
+    color: #DC2626;
+}
+
+.btn-outline-a {
+    border: 2px solid #E5E7EB;
+    color: #4B5563;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 0.6rem;
+}
+
+.btn-outline-a:hover {
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+}
+
+@media (max-width: 991px) {
+    .almacen-sidebar {
+        position: fixed;
+        height: 100vh;
+        width: 80px;
+    }
+
+    .logo-info,
+    .s-link span:last-child,
+    .btn-logout-a {
+        display: none;
+    }
+
+    .almacen-main {
+        margin-left: 80px;
+    }
+}

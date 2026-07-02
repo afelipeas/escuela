@@ -1,0 +1,208 @@
+<div class="checkout-page min-vh-100 bg-light-crema">
+
+    <!-- HEADER SIMPLIFICADO -->
+    <header class="checkout-header bg-white shadow-sm py-3 mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <a routerLink="/tienda/catalogo" class="text-decoration-none d-flex align-items-center gap-2">
+                    <div class="logo-small">✝</div>
+                    <span class="fw-bold text-marron">Tienda Virtual</span>
+                </a>
+                @if (authService.currentUser()) {
+                    <a class="btn btn-volver-panel d-flex align-items-center gap-2 px-3 py-2 rounded-pill text-decoration-none fw-bold" [routerLink]="authService.getDashboardRoute()">
+                        <span>⬅️</span>
+                        <span class="d-none d-sm-inline">Volver a mi Panel</span>
+                    </a>
+                }
+            </div>
+            <div class="checkout-steps d-none d-md-flex align-items-center gap-2">
+                <span class="step-dot" [class.active]="pasoActual >= 1">1</span>
+                <span class="step-label">Carrito</span>
+                <div class="step-line"></div>
+                <span class="step-dot" [class.active]="pasoActual >= 2">2</span>
+                <span class="step-label">Pago</span>
+                <div class="step-line"></div>
+                <span class="step-dot" [class.active]="pasoActual >= 3">3</span>
+                <span class="step-label">Éxito</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container pb-5">
+
+        <!-- PASO 1: RESUMEN DEL CARRITO -->
+        @if (pasoActual === 1) {
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card-checkout p-4 border-0 shadow-sm rounded-4 bg-white">
+                    <h1 class="h4 fw-bold mb-4">🛒 Tu Carrito de Compras</h1>
+
+                    @if (carrito.length > 0) {
+                    <div class="cart-items">
+                        @for (item of carrito; track item.id_item) {
+                        <div class="cart-item d-flex align-items-center gap-3 py-3 border-bottom">
+                            <div class="item-img-box">
+                                @if (item.imagen_url && item.imagen_url.startsWith('http')) {
+                                    <img [src]="item.imagen_url" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
+                                } @else {
+                                    {{ item.imagen_url || '📦' }}
+                                }
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="h6 fw-bold mb-0">{{ item.nombre }}</h3>
+                                <p class="text-muted small mb-0">{{ item.categoria }}</p>
+                            </div>
+                            <div class="qty-control d-flex align-items-center gap-2">
+                                <button (click)="actualizarCantidad(item.id, -1)" class="btn-qty" [disabled]="item.cantidad <= 1">-</button>
+                                <span class="fw-bold">{{ item.cantidad }}</span>
+                                <button (click)="actualizarCantidad(item.id, 1)" class="btn-qty">+</button>
+                            </div>
+                            <div class="text-end" style="min-width: 100px;">
+                                <p class="fw-bold text-marron mb-0">${{ (item.precio * item.cantidad) | number }}</p>
+                                <button (click)="eliminarItem(item.id)"
+                                    class="btn-remove p-0 border-0 bg-transparent text-danger small">Eliminar</button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <div class="mt-4">
+                        <button (click)="irATienda()" class="btn btn-outline-secondary rounded-pill">
+                            ← Seguir comprando
+                        </button>
+                    </div>
+                    } @else {
+                    <div class="text-center py-5">
+                        <div class="fs-1">🛒</div>
+                        <h2 class="h5 mt-3">Tu carrito está vacío</h2>
+                        <p class="text-muted">¡Hay muchos tesoros esperando por ti!</p>
+                        <button (click)="irATienda()" class="btn btn-naranja rounded-pill px-4">Ir a la Tienda</button>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card-summary p-4 border-0 shadow-sm rounded-4 bg-white sticky-top-custom">
+                    <h2 class="h5 fw-bold mb-4">Resumen de Compra</h2>
+                    
+                    <div class="points-balance mb-4 p-3 bg-light-orange rounded-3 d-flex align-items-center gap-2">
+                        <span class="fs-4">💎</span>
+                        <div>
+                            <p class="mb-0 small fw-bold">Tus Puntos Fe:</p>
+                            <p class="mb-0 h6 fw-bold text-marron">{{ dataService.puntosFeActuales() | number }}</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span>${{ subtotal | number }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Envío</span>
+                        <span class="text-success">{{ costoEnvio === 0 ? 'Gratis' : '$' + (costoEnvio | number)
+                            }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4 mt-2">
+                        <span class="h5 fw-bold">Total</span>
+                        <span class="h5 fw-bold text-orange">${{ total | number }}</span>
+                    </div>
+
+                    <p class="text-muted smaller mb-3 text-center">
+                        <i class="opacity-75">Tip: También puedes pagar con Puntos Fe en el siguiente paso.</i>
+                    </p>
+
+                    <button (click)="irACheckout()" [disabled]="carrito.length === 0"
+                        class="btn btn-naranja w-100 py-3 rounded-pill fw-bold">
+                        Continuar al Pago ➔
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- PASO 2: FORMULARIO DE PAGO -->
+        @if (pasoActual === 2) {
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-7">
+                <div class="card-checkout p-4 border-0 shadow-sm rounded-4 bg-white">
+                    <button (click)="pasoActual = 1"
+                        class="btn btn-link text-decoration-none text-muted p-0 mb-3 small">← Volver al carrito</button>
+                    <h1 class="h4 fw-bold mb-4">🛡️ Información de Envío y Pago</h1>
+
+                    @if (errorCheckout) {
+                        <div class="alert alert-danger rounded-4 py-2 small mb-3">
+                            ⚠️ {{ errorCheckout }}
+                        </div>
+                    }
+
+                    <form (ngSubmit)="confirmarPedido()" #checkoutForm="ngForm">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Nombre del Destinatario</label>
+                                <input type="text" class="form-control rounded-3" [(ngModel)]="formCompra.nombre_envio"
+                                    name="nombre_envio" required placeholder="Nombre de quien recibe">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Dirección Completa de Entrega</label>
+                                <input type="text" class="form-control rounded-3" [(ngModel)]="formCompra.direccion_envio"
+                                    name="direccion_envio" required placeholder="Calle, número, depto...">
+                            </div>
+                        </div>
+
+                        <h2 class="h6 fw-bold mt-4 mb-3">¿Cómo prefieres pagar?</h2>
+                        <div class="payment-methods d-grid gap-2">
+                            <div class="payment-option border rounded-3 p-3 d-flex align-items-center gap-3 cp"
+                                [class.selected]="formCompra.metodo_pago === 'puntos'"
+                                (click)="formCompra.metodo_pago = 'puntos'">
+                                <div class="p-icon-box">💎</div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 fw-bold">Puntos Fe (Canje)</p>
+                                    <p class="mb-0 smaller text-muted">Saldo disponible: {{ dataService.puntosFeActuales() | number }} pts</p>
+                                </div>
+                                <input type="radio" name="pago" [checked]="formCompra.metodo_pago === 'puntos'">
+                            </div>
+                            <div class="payment-option border rounded-3 p-3 d-flex align-items-center gap-3 cp"
+                                [class.selected]="formCompra.metodo_pago === 'tarjeta'"
+                                (click)="formCompra.metodo_pago = 'tarjeta'">
+                                <div class="p-icon-box">💳</div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 fw-bold">Tarjeta / Transferencia</p>
+                                    <p class="mb-0 smaller text-muted">Paga el total en pesos colombianos</p>
+                                </div>
+                                <input type="radio" name="pago" [checked]="formCompra.metodo_pago === 'tarjeta'">
+                            </div>
+                        </div>
+
+                        <button type="submit" [disabled]="!checkoutForm.form.valid || cargando"
+                            class="btn btn-success w-100 py-3 mt-4 rounded-pill fw-bold">
+                            {{ cargando ? 'Procesando...' : 'Confirmar y Realizar Pedido ➔' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- PASO 3: ÉXITO -->
+        @if (pasoActual === 3) {
+        <div class="row justify-content-center py-5">
+            <div class="col-lg-6 text-center">
+                <div class="success-illustration mb-4">📦</div>
+                <h1 class="h2 fw-bold text-marron">¡Tu pedido ha sido confirmado!</h1>
+                <p class="text-muted lead px-4">Estamos preparando tu paquete. Recibirás una notificación cuando el Almacén lo despache.</p>
+                <div class="order-id p-3 bg-white shadow-sm rounded-4 border-dashed my-4">
+                    <span class="text-muted small">Referencia de compra:</span><br>
+                    <strong class="h4 text-orange">PENDIENTE DE PROCESAR</strong>
+                </div>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button (click)="irATienda()" class="btn btn-naranja rounded-pill px-4" (click)="pasoActual = 1">Seguir Comprando</button>
+                    <button routerLink="/cliente/dashboard" class="btn btn-outline-marron rounded-pill px-4">Ver mi Historial</button>
+                </div>
+            </div>
+        </div>
+        }
+
+    </div>
+
+</div>

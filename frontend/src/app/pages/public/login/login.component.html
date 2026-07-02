@@ -1,0 +1,194 @@
+<!-- =============================================
+     P02 — LOGIN / INICIO DE SESIÓN
+     Escuela Dominical Virtual para Niños
+     Bootstrap 5 + CSS Personalizado
+     ============================================= -->
+
+<!-- Fondo decorativo con degradado cálido -->
+<div class="pagina-login min-vh-100 d-flex flex-column">
+
+    <!-- ===== Decoración de fondo ===== -->
+    <div class="fondo-decorativo" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="patron-fondo"></div>
+    </div>
+
+    <!-- ===== Barra superior mínima ===== -->
+    <header class="login-header py-3 px-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+
+                <!-- Logo + volver al inicio -->
+                <a routerLink="/" class="logo-enlace d-flex align-items-center gap-2 text-decoration-none">
+                    <div class="logo-circulo-login">✝</div>
+                    <div class="logo-texto-login d-none d-sm-flex flex-column">
+                        <span class="logo-nombre-login">Escuela Dominical</span>
+                        <span class="logo-lema-login">Virtual para Niños</span>
+                    </div>
+                </a>
+
+                <!-- Enlace de regreso -->
+                <a routerLink="/" class="enlace-volver d-flex align-items-center gap-1">
+                    <span>←</span>
+                    <span class="d-none d-sm-inline">Volver al inicio</span>
+                    <span class="d-inline d-sm-none">Volver</span>
+                </a>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== Contenido central ===== -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center py-4 px-3">
+        <div class="container">
+            <div class="row justify-content-center">
+
+                <!-- ===== TARJETA DE LOGIN ===== -->
+                <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+                    <div class="tarjeta-login">
+
+                        <!-- Emblema / Logo superior -->
+                        <div class="emblema-superior text-center">
+                            <div class="emblema-circulo mx-auto">
+                                <span class="emblema-icono">✝</span>
+                            </div>
+                            <div class="emblema-anillo" aria-hidden="true"></div>
+                        </div>
+
+                        <!-- Encabezado de la tarjeta -->
+                        <div class="text-center mt-3 mb-4">
+                            <h1 class="titulo-login">Bienvenido a tu<br><span class="titulo-resaltado">Escuela
+                                    Virtual</span></h1>
+                            <p class="subtitulo-login mt-2">Ingresa tus credenciales para acceder a tu espacio</p>
+                        </div>
+
+                        <!-- Divisor con gradiente -->
+                        <div class="divisor-gradiente mb-4"></div>
+
+                        <!-- ===== FORMULARIO ===== -->
+                        <form (ngSubmit)="iniciarSesion()" #formularioLogin="ngForm" novalidate>
+
+                            <!-- Alerta de error -->
+                            @if (mensajeError) {
+                            <div class="alerta-error d-flex align-items-start gap-2 mb-4" role="alert">
+                                <span class="alerta-icono flex-shrink-0">
+                                    {{ mensajeError.startsWith('🚧') ? '🚧' : '⚠️' }}
+                                </span>
+                                <span class="alerta-texto">{{ mensajeError }}</span>
+                            </div>
+                            }
+
+                            <!-- Campo: Usuario o Correo -->
+                            <div class="mb-4">
+                                <label for="campoUsuario" class="etiqueta-campo">
+                                    Usuario o Correo Electrónico
+                                </label>
+                                <div class="input-grupo">
+                                    <span class="input-icono" aria-hidden="true">👤</span>
+                                    <input type="text" id="campoUsuario" name="usuario" class="campo-texto"
+                                        [class.campo-invalido]="camposTocados && !credenciales.usuario.trim()"
+                                        placeholder="tu.usuario@escuela.com" [(ngModel)]="credenciales.usuario"
+                                        (input)="alEscribir()" autocomplete="username" maxlength="100" />
+                                </div>
+                                @if (camposTocados && !credenciales.usuario.trim()) {
+                                <span class="mensaje-validacion">Este campo es obligatorio</span>
+                                }
+                            </div>
+
+                            <!-- Campo: Contraseña -->
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="campoContrasena" class="etiqueta-campo">Contraseña</label>
+                                    <a href="#" class="enlace-olvido" (click)="$event.preventDefault()">
+                                        ¿Olvidaste tu contraseña?
+                                    </a>
+                                </div>
+                                <div class="input-grupo">
+                                    <span class="input-icono" aria-hidden="true">🔒</span>
+                                    <input [type]="contrasenaVisible ? 'text' : 'password'" id="campoContrasena"
+                                        name="contrasena" class="campo-texto campo-con-boton"
+                                        [class.campo-invalido]="camposTocados && !credenciales.contrasena.trim()"
+                                        placeholder="Tu contraseña segura" [(ngModel)]="credenciales.contrasena"
+                                        (input)="alEscribir()" autocomplete="current-password" maxlength="128" />
+                                    <button type="button" class="boton-ver-contrasena" (click)="alternarContrasena()"
+                                        [attr.aria-label]="contrasenaVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                                        {{ contrasenaVisible ? '🙈' : '👁️' }}
+                                    </button>
+                                </div>
+                                @if (camposTocados && !credenciales.contrasena.trim()) {
+                                <span class="mensaje-validacion">La contraseña es obligatoria</span>
+                                }
+                            </div>
+
+                            <!-- Recordar sesión -->
+                            <div class="d-flex align-items-center gap-2 mb-4 mt-3">
+                                <input type="checkbox" id="recordarme" class="checkbox-recordar">
+                                <label for="recordarme" class="etiqueta-recordar">Recordar mi sesión</label>
+                            </div>
+
+                            <!-- Botón Iniciar Sesión -->
+                            <button type="submit" class="boton-ingresar w-100" [class.cargando]="cargando"
+                                [disabled]="cargando">
+                                @if (cargando) {
+                                <span class="spinner-borde" role="status" aria-hidden="true"></span>
+                                <span>Verificando...</span>
+                                } @else {
+                                <span>🔓</span>
+                                <span>Iniciar Sesión</span>
+                                }
+                            </button>
+
+                        </form>
+
+                        <!-- ===== BOTÓN GOOGLE ===== -->
+                        <div class="d-flex align-items-center my-4">
+                            <div class="linea-separador flex-grow-1"></div>
+                            <span class="texto-separador px-3">o continuar con</span>
+                            <div class="linea-separador flex-grow-1"></div>
+                        </div>
+
+                        <button type="button" class="boton-google w-100 mb-2" (click)="loginConGoogle()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="icono-google">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            <span>Ingresar con Google</span>
+                        </button>
+
+                        <!-- ===== ENLACE: Registrarse ===== -->
+                        <div class="text-center mt-2 pie-tarjeta">
+                            <p class="mb-0">
+                                ¿No tienes cuenta?
+                                <a routerLink="/registro" class="enlace-registro">Regístrate aquí</a>
+                            </p>
+                        </div>
+
+                    </div>
+                    <!-- /tarjeta-login -->
+
+                    <!-- Texto de seguridad debajo de la tarjeta -->
+                    <div class="texto-seguridad text-center mt-4">
+                        <span>🔒 Conexión segura HTTPS</span>
+                        <span class="separador-punto">·</span>
+                        <span>🛡️ Datos protegidos</span>
+                        <span class="separador-punto">·</span>
+                        <span>✅ Privacidad garantizada</span>
+                    </div>
+
+                </div>
+                <!-- /col -->
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== Pie de página mínimo ===== -->
+    <footer class="login-pie text-center py-3">
+        <small>© 2026 Escuela Dominical Virtual · Todos los derechos reservados</small>
+    </footer>
+
+</div>

@@ -1,0 +1,480 @@
+<!-- =============================================
+     P03 — REGISTRO DE USUARIO
+     Escuela Dominical Virtual para Niños
+     Bootstrap 5 + CSS Personalizado — 3 Pasos
+     ============================================= -->
+
+<div class="pagina-registro min-vh-100 d-flex flex-column">
+
+    <!-- Fondo decorativo -->
+    <div class="fondo-decorativo" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="patron-fondo"></div>
+    </div>
+
+    <!-- ===== Header mínimo ===== -->
+    <header class="registro-header py-3 px-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <a routerLink="/" class="logo-enlace d-flex align-items-center gap-2 text-decoration-none">
+                    <div class="logo-circulo-reg">✝</div>
+                    <div class="d-none d-sm-flex flex-column logo-texto-reg">
+                        <span class="logo-nombre-reg">Escuela Dominical</span>
+                        <span class="logo-lema-reg">Virtual para Niños</span>
+                    </div>
+                </a>
+                <a routerLink="/login" class="enlace-volver d-flex align-items-center gap-1">
+                    <span>←</span>
+                    <span class="d-none d-sm-inline">Volver al Login</span>
+                    <span class="d-inline d-sm-none">Login</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== Contenido principal ===== -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center py-4 px-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6">
+
+                    <!-- ======= PANTALLA DE ÉXITO ======= -->
+                    @if (registroExitoso) {
+                    <div class="tarjeta-registro text-center">
+                        <div class="exito-icono mx-auto mb-4">✅</div>
+                        <h2 class="titulo-exito">¡Registro Exitoso!</h2>
+                        <p class="descripcion-exito mt-3">
+                            Tu cuenta ha sido creada correctamente. En unos segundos
+                            serás redirigido a la página de inicio de sesión.
+                        </p>
+                        <div class="spinner-borde mx-auto mt-4" role="status" aria-label="Cargando"></div>
+                        <p class="mt-3 texto-redirigiendo">Redirigiendo al Login...</p>
+                        <a routerLink="/login" class="boton-ingresar-reg d-inline-flex align-items-center gap-2 mt-3">
+                            🔐 Ir al Login ahora
+                        </a>
+                    </div>
+                    }
+
+                    <!-- ======= FORMULARIO DE REGISTRO ======= -->
+                    @if (!registroExitoso) {
+                    <div class="tarjeta-registro">
+
+                        <!-- Emblema y título -->
+                        <div class="text-center mb-4">
+                            <div class="emblema-circulo mx-auto mb-3">✝</div>
+                            <h1 class="titulo-registro">Crea tu <span class="titulo-resaltado">Cuenta</span></h1>
+                            <p class="subtitulo-registro">Completa el formulario en {{ totalPasos }} pasos para unirte
+                            </p>
+                        </div>
+
+                        <!-- ===== INDICADOR DE PASOS ===== -->
+                        <div class="indicador-pasos mb-4">
+                            <!-- Barra de progreso -->
+                            <div class="barra-progreso-fondo mb-3">
+                                <div class="barra-progreso-relleno" [style.width.%]="porcentajeProgreso"></div>
+                            </div>
+                            <!-- Círculos de pasos -->
+                            <div class="d-flex justify-content-between align-items-start position-relative">
+                                <div class="linea-pasos" aria-hidden="true"></div>
+                                <!-- Paso 1 -->
+                                <div class="paso-indicador text-center" [class.activo]="pasoActual === 1"
+                                    [class.completado]="pasoActual > 1">
+                                    <div class="paso-circulo">
+                                        @if (pasoActual > 1) { <span>✓</span> } @else { <span>1</span> }
+                                    </div>
+                                    <span class="paso-etiqueta d-none d-sm-block">Datos<br>Personales</span>
+                                </div>
+                                <!-- Paso 2 -->
+                                <div class="paso-indicador text-center" [class.activo]="pasoActual === 2"
+                                    [class.completado]="pasoActual > 2">
+                                    <div class="paso-circulo">
+                                        @if (pasoActual > 2) { <span>✓</span> } @else { <span>2</span> }
+                                    </div>
+                                    <span class="paso-etiqueta d-none d-sm-block">Credenciales<br>de Acceso</span>
+                                </div>
+                                <!-- Paso 3 -->
+                                <div class="paso-indicador text-center" [class.activo]="pasoActual === 3"
+                                    [class.completado]="false">
+                                    <div class="paso-circulo"><span>3</span></div>
+                                    <span class="paso-etiqueta d-none d-sm-block">Tipo de<br>Perfil</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alerta de error -->
+                        @if (mensajeError) {
+                        <div class="alerta-error d-flex align-items-start gap-2 mb-4" role="alert">
+                            <span class="alerta-icono flex-shrink-0">⚠️</span>
+                            <span class="alerta-texto">{{ mensajeError }}</span>
+                        </div>
+                        }
+
+                        <!-- ============================
+                 PASO 1 — DATOS PERSONALES
+                 ============================ -->
+                        @if (pasoActual === 1) {
+                        <div class="paso-contenido">
+                            <div class="paso-encabezado mb-4">
+                                <span class="paso-numero-titulo">Paso 1 de 3</span>
+                                <h2 class="paso-titulo">Cuéntanos sobre ti</h2>
+                                <p class="paso-descripcion">Ingresa tus datos personales. Los campos con * son
+                                    obligatorios.</p>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Nombre -->
+                                <div class="col-sm-6">
+                                    <label for="campoNombre" class="etiqueta-campo">Nombre *</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">😊</span>
+                                        <input type="text" id="campoNombre" name="nombre" class="campo-texto"
+                                            [class.campo-invalido]="camposTocados && datosPersonales.nombre.trim().length < 2"
+                                            placeholder="Tu nombre" [(ngModel)]="datosPersonales.nombre"
+                                            (input)="alEscribir()" maxlength="60" />
+                                    </div>
+                                    @if (camposTocados && datosPersonales.nombre.trim().length < 2) { <span
+                                        class="mensaje-validacion">Mínimo 2 caracteres</span>
+                                        }
+                                </div>
+
+                                <!-- Apellido -->
+                                <div class="col-sm-6">
+                                    <label for="campoApellido" class="etiqueta-campo">Apellido *</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">👤</span>
+                                        <input type="text" id="campoApellido" name="apellido" class="campo-texto"
+                                            [class.campo-invalido]="camposTocados && datosPersonales.apellido.trim().length < 2"
+                                            placeholder="Tu apellido" [(ngModel)]="datosPersonales.apellido"
+                                            (input)="alEscribir()" maxlength="60" />
+                                    </div>
+                                    @if (camposTocados && datosPersonales.apellido.trim().length < 2) { <span
+                                        class="mensaje-validacion">Mínimo 2 caracteres</span>
+                                        }
+                                </div>
+
+                                <!-- Teléfono -->
+                                <div class="col-sm-6">
+                                    <label for="campoTelefono" class="etiqueta-campo">Teléfono</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">📞</span>
+                                        <input type="tel" id="campoTelefono" name="telefono" class="campo-texto"
+                                            placeholder="+57 300 000 0000" [(ngModel)]="datosPersonales.telefono"
+                                            maxlength="20" />
+                                    </div>
+                                </div>
+
+                                <!-- Fecha de Nacimiento -->
+                                <div class="col-sm-6">
+                                    <label for="campoFecha" class="etiqueta-campo">Fecha de Nacimiento</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">🎂</span>
+                                        <input type="date" id="campoFecha" name="fechaNacimiento" class="campo-texto"
+                                            [(ngModel)]="datosPersonales.fechaNacimiento" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nota informativa -->
+                            <div class="nota-info mt-3 d-flex gap-2 align-items-start">
+                                <span class="flex-shrink-0">ℹ️</span>
+                                <p class="mb-0">Tu información personal está protegida y solo será usada para gestionar
+                                    tu cuenta en la plataforma.</p>
+                            </div>
+                        </div>
+                        }
+
+                        <!-- ============================
+                 PASO 2 — CREDENCIALES
+                 ============================ -->
+                        @if (pasoActual === 2) {
+                        <div class="paso-contenido">
+                            <div class="paso-encabezado mb-4">
+                                <span class="paso-numero-titulo">Paso 2 de 3</span>
+                                <h2 class="paso-titulo">Crea tus credenciales</h2>
+                                <p class="paso-descripcion">Define tu usuario y contraseña para ingresar al sistema.</p>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Nombre de usuario -->
+                                <div class="col-12">
+                                    <label for="campoUsuario" class="etiqueta-campo">Nombre de Usuario *</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">🏷️</span>
+                                        <input type="text" id="campoUsuario" name="nombreUsuario" class="campo-texto"
+                                            [class.campo-invalido]="camposTocados && datosAcceso.nombreUsuario.trim().length < 3"
+                                            placeholder="ej: sofia.garcia2026" [(ngModel)]="datosAcceso.nombreUsuario"
+                                            (input)="alEscribir()" maxlength="30" />
+                                    </div>
+                                    @if (camposTocados && datosAcceso.nombreUsuario.trim().length < 3) { <span
+                                        class="mensaje-validacion">Mínimo 3 caracteres, sin espacios</span>
+                                        }
+                                        <small class="texto-ayuda">Solo letras, números, puntos y guiones bajos.</small>
+                                </div>
+
+                                <!-- Correo electrónico -->
+                                <div class="col-12">
+                                    <label for="campoCorreo" class="etiqueta-campo">Correo Electrónico *</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">📧</span>
+                                        <input type="email" id="campoCorreo" name="correo" class="campo-texto"
+                                            [class.campo-invalido]="camposTocados && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosAcceso.correo)"
+                                            placeholder="tu.correo@ejemplo.com" [(ngModel)]="datosAcceso.correo"
+                                            (input)="alEscribir()" maxlength="100" />
+                                    </div>
+                                    @if (camposTocados && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datosAcceso.correo)) {
+                                    <span class="mensaje-validacion">Ingresa un correo válido</span>
+                                    }
+                                </div>
+
+                                <!-- Contraseña -->
+                                <div class="col-sm-6">
+                                    <label for="campoContrasena" class="etiqueta-campo">Contraseña *</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">🔒</span>
+                                        <input [type]="contrasenaVisible ? 'text' : 'password'" id="campoContrasena"
+                                            name="contrasena" class="campo-texto campo-con-boton"
+                                            [class.campo-invalido]="camposTocados && datosAcceso.contrasena.length < 8"
+                                            placeholder="Mínimo 8 caracteres" [(ngModel)]="datosAcceso.contrasena"
+                                            (input)="alEscribir()" maxlength="128" />
+                                        <button type="button" class="boton-ver-contrasena"
+                                            (click)="alternarContrasena()">
+                                            {{ contrasenaVisible ? '🙈' : '👁️' }}
+                                        </button>
+                                    </div>
+                                    @if (camposTocados && datosAcceso.contrasena.length < 8) { <span
+                                        class="mensaje-validacion">Mínimo 8 caracteres</span>
+                                        }
+                                        <!-- Indicador de fortaleza -->
+                                        @if (datosAcceso.contrasena) {
+                                        <div class="fortaleza-contrasena mt-2">
+                                            <div class="fortaleza-barras d-flex gap-1">
+                                                @for (i of [1,2,3,4]; track i) {
+                                                <div class="fortaleza-barra"
+                                                    [class]="i <= fortalezaContrasena ? claseFortaleza : ''"></div>
+                                                }
+                                            </div>
+                                            <span class="fortaleza-etiqueta">{{ etiquetaFortaleza }}</span>
+                                        </div>
+                                        }
+                                </div>
+
+                                <!-- Confirmar contraseña -->
+                                <div class="col-sm-6">
+                                    <label for="campoConfirmar" class="etiqueta-campo">Confirmar Contraseña *</label>
+                                    <div class="input-grupo">
+                                        <span class="input-icono">🔑</span>
+                                        <input [type]="confirmarContrasenaVisible ? 'text' : 'password'"
+                                            id="campoConfirmar" name="confirmarContrasena"
+                                            class="campo-texto campo-con-boton"
+                                            [class.campo-invalido]="camposTocados && !contrasenasCoinciden && datosAcceso.confirmarContrasena !== ''"
+                                            [class.campo-valido]="contrasenasCoinciden"
+                                            placeholder="Repite tu contraseña"
+                                            [(ngModel)]="datosAcceso.confirmarContrasena" (input)="alEscribir()"
+                                            maxlength="128" />
+                                        <button type="button" class="boton-ver-contrasena"
+                                            (click)="alternarConfirmarContrasena()">
+                                            {{ confirmarContrasenaVisible ? '🙈' : '👁️' }}
+                                        </button>
+                                    </div>
+                                    @if (datosAcceso.confirmarContrasena && !contrasenasCoinciden) {
+                                    <span class="mensaje-validacion">Las contraseñas no coinciden</span>
+                                    }
+                                    @if (contrasenasCoinciden) {
+                                    <span class="mensaje-valido">✅ Las contraseñas coinciden</span>
+                                    }
+                                </div>
+
+                                <!-- Requisitos de contraseña -->
+                                <div class="col-12">
+                                    <div class="requisitos-contrasena">
+                                        <p class="requisitos-titulo mb-2">Requisitos de la contraseña:</p>
+                                        <div class="row g-1">
+                                            <div class="col-6">
+                                                <span class="requisito-item"
+                                                    [class.cumplido]="datosAcceso.contrasena.length >= 8">
+                                                    {{ datosAcceso.contrasena.length >= 8 ? '✅' : '⬜' }} Mínimo 8
+                                                    caracteres
+                                                </span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span class="requisito-item"
+                                                    [class.cumplido]="/[A-Z]/.test(datosAcceso.contrasena)">
+                                                    {{ /[A-Z]/.test(datosAcceso.contrasena) ? '✅' : '⬜' }} Una mayúscula
+                                                </span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span class="requisito-item"
+                                                    [class.cumplido]="/[0-9]/.test(datosAcceso.contrasena)">
+                                                    {{ /[0-9]/.test(datosAcceso.contrasena) ? '✅' : '⬜' }} Un número
+                                                </span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span class="requisito-item"
+                                                    [class.cumplido]="/[^A-Za-z0-9]/.test(datosAcceso.contrasena)">
+                                                    {{ /[^A-Za-z0-9]/.test(datosAcceso.contrasena) ? '✅' : '⬜' }} Un
+                                                    símbolo especial
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        }
+
+                        <!-- ============================
+                 PASO 3 — TIPO DE PERFIL
+                 ============================ -->
+                        @if (pasoActual === 3) {
+                        <div class="paso-contenido">
+                            <div class="paso-encabezado mb-4">
+                                <span class="paso-numero-titulo">Paso 3 de 3</span>
+                                <h2 class="paso-titulo">¿Cómo usarás la plataforma?</h2>
+                                <p class="paso-descripcion">Selecciona el perfil que mejor describe tu rol en la
+                                    comunidad.</p>
+                            </div>
+
+                            <!-- Selector de tipo de usuario -->
+                            <div class="row g-3 mb-4">
+                                <!-- Estudiante -->
+                                <div class="col-sm-6">
+                                    <div class="tarjeta-rol" [class.seleccionada]="tipoUsuario === 'estudiante'"
+                                        (click)="seleccionarRol('estudiante')" tabindex="0"
+                                        (keydown.enter)="seleccionarRol('estudiante')" role="button"
+                                        aria-pressed="{{ tipoUsuario === 'estudiante' }}">
+                                        <div class="rol-icono">🎒</div>
+                                        <h4 class="rol-nombre mt-3">Estudiante</h4>
+                                        <p class="rol-descripcion">Accede a clases virtuales, recursos y envía tareas.
+                                        </p>
+                                        <ul class="rol-lista mt-2">
+                                            <li>📚 Ver clases en video</li>
+                                            <li>📝 Enviar tareas</li>
+                                            <li>💬 Participar en comentarios</li>
+                                        </ul>
+                                        <div class="rol-check" aria-hidden="true">
+                                            @if (tipoUsuario === 'estudiante') { ✓ }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cliente de tienda -->
+                                <div class="col-sm-6">
+                                    <div class="tarjeta-rol" [class.seleccionada]="tipoUsuario === 'cliente'"
+                                        (click)="seleccionarRol('cliente')" tabindex="0"
+                                        (keydown.enter)="seleccionarRol('cliente')" role="button"
+                                        aria-pressed="{{ tipoUsuario === 'cliente' }}">
+                                        <div class="rol-icono">🛍️</div>
+                                        <h4 class="rol-nombre mt-3">Cliente de Tienda</h4>
+                                        <p class="rol-descripcion">Compra artículos de fe y productos de la escuela.</p>
+                                        <ul class="rol-lista mt-2">
+                                            <li>🛒 Explorar catálogo</li>
+                                            <li>📦 Seguir pedidos</li>
+                                            <li>↩️ Gestionar devoluciones</li>
+                                        </ul>
+                                        <div class="rol-check" aria-hidden="true">
+                                            @if (tipoUsuario === 'cliente') { ✓ }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nota sobre otros roles -->
+                            <div class="nota-info mb-4 d-flex gap-2 align-items-start">
+                                <span class="flex-shrink-0">💡</span>
+                                <p class="mb-0">¿Eres docente, vendedor o jefe de almacén? Tu administrador asignará tu
+                                    rol avanzado una vez creada la cuenta.</p>
+                            </div>
+
+                            <!-- Aceptar términos -->
+                            <div class="d-flex align-items-start gap-3 mb-3 p-3 fondo-terminos rounded-3">
+                                <input type="checkbox" id="aceptoTerminos" class="checkbox-terminos flex-shrink-0"
+                                    [(ngModel)]="aceptaTerminos" name="aceptaTerminos" />
+                                <label for="aceptoTerminos" class="etiqueta-terminos">
+                                    He leído y acepto los
+                                    <a href="#" class="enlace-terminos" (click)="$event.preventDefault()">Términos y
+                                        Condiciones</a>
+                                    y la
+                                    <a href="#" class="enlace-terminos" (click)="$event.preventDefault()">Política de
+                                        Privacidad</a>
+                                    de la Escuela Dominical Virtual. *
+                                </label>
+                            </div>
+
+                            <!-- Comunicaciones opcionales -->
+                            <div class="d-flex align-items-start gap-3 mb-4">
+                                <input type="checkbox" id="aceptoComunicaciones" class="checkbox-terminos flex-shrink-0"
+                                    [(ngModel)]="aceptaComunicaciones" name="aceptaComunicaciones" />
+                                <label for="aceptoComunicaciones" class="etiqueta-terminos">
+                                    Deseo recibir notificaciones sobre nuevas clases, productos y eventos especiales.
+                                    (Opcional)
+                                </label>
+                            </div>
+                        </div>
+                        }
+
+                        <!-- ===== BOTONES DE NAVEGACIÓN ===== -->
+                        <div class="navegacion-pasos d-flex gap-3 mt-4">
+
+                            <!-- Botón anterior -->
+                            @if (pasoActual > 1) {
+                            <button type="button" class="boton-anterior flex-shrink-0" (click)="pasoPrevio()"
+                                [disabled]="cargando">
+                                ← Anterior
+                            </button>
+                            }
+
+                            <!-- Botón siguiente / registrar -->
+                            @if (pasoActual < totalPasos) { <button type="button" class="boton-siguiente flex-grow-1"
+                                (click)="siguientePaso()">
+                                Siguiente → <span class="paso-indicador-boton">Paso {{ pasoActual + 1 }}</span>
+                                </button>
+                                }
+
+                                @if (pasoActual === totalPasos) {
+                                <button type="button" class="boton-registrar flex-grow-1" [class.cargando]="cargando"
+                                    [disabled]="cargando" (click)="registrarse()">
+                                    @if (cargando) {
+                                    <span class="spinner-borde" role="status"></span>
+                                    <span>Creando cuenta...</span>
+                                    } @else {
+                                    <span>🚀 Crear mi Cuenta</span>
+                                    }
+                                </button>
+                                }
+
+                        </div>
+
+                        <!-- Enlace al login -->
+                        <div class="text-center mt-4 pie-tarjeta">
+                            <p class="mb-0">
+                                ¿Ya tienes cuenta?
+                                <a routerLink="/login" class="enlace-login">Inicia sesión aquí</a>
+                            </p>
+                        </div>
+
+                    </div>
+                    <!-- /tarjeta-registro -->
+                    }
+
+                    <!-- Texto de seguridad -->
+                    <div class="texto-seguridad text-center mt-4">
+                        <span>🔒 Conexión segura HTTPS</span>
+                        <span class="separador-punto">·</span>
+                        <span>🛡️ Datos protegidos</span>
+                        <span class="separador-punto">·</span>
+                        <span>✅ Privacidad garantizada</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pie de página mínimo -->
+    <footer class="registro-pie text-center py-3">
+        <small>© 2026 Escuela Dominical Virtual · Todos los derechos reservados</small>
+    </footer>
+
+</div>

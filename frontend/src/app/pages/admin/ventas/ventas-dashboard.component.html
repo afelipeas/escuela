@@ -1,0 +1,562 @@
+<div class="ventas-layout min-vh-100 bg-light-soft">
+
+    @if (toastMsg) {
+    <div class="toast-success">
+        <span>✅</span> {{ toastMsg }}
+    </div>
+    }
+
+    <!-- BARRA SUPERIOR ADMIN -->
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom sticky-top">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center gap-3">
+                <a routerLink="/admin/dashboard" class="btn-back-ventas">📊</a>
+                <h1 class="h5 fw-bold mb-0 text-marron">Gestión Integral de Ventas</h1>
+            </div>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <!-- Botón abrir/cerrar reporte -->
+                <button (click)="toggleReporte()" id="btn-toggle-reporte"
+                    class="btn btn-naranja btn-sm rounded-pill fw-bold d-flex align-items-center gap-2">
+                    <span>📊</span>
+                    {{ mostrarReporte ? 'Ocultar Reporte' : 'Generar Reporte' }}
+                </button>
+                <div class="user-profile-v d-flex align-items-center gap-2">
+                    <div class="avatar-v">{{ usuario.foto }}</div>
+                    <div class="d-none d-sm-block">
+                        <p class="mb-0 fw-bold small">{{ usuario.nombre }}</p>
+                        <span class="smaller text-muted">{{ usuario.rol }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4 px-lg-5">
+
+        <!-- ════════════════════════════════════════════════
+             PANEL DE REPORTE DE VENTAS (colapsable)
+        ════════════════════════════════════════════════ -->
+        @if (mostrarReporte) {
+        <div class="reporte-panel mb-5 animate-slide-down">
+            <div class="card border-0 shadow rounded-4 bg-white overflow-hidden">
+
+                <!-- Header del panel -->
+                <div class="reporte-header px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="reporte-icon-box">📊</div>
+                        <div>
+                            <h2 class="h5 fw-bold mb-0 text-white">Reporte de Ventas por Período</h2>
+                            <p class="smaller mb-0 opacity-75 text-white">Filtra, analiza y exporta los datos de ventas</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button (click)="exportarCSV()" id="btn-exportar-csv"
+                            class="btn btn-light btn-sm rounded-pill fw-bold">
+                            ⬇️ Exportar CSV
+                        </button>
+                        <button (click)="imprimirReporte()" id="btn-imprimir"
+                            class="btn btn-outline-light btn-sm rounded-pill fw-bold">
+                            🖨️ Imprimir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="p-4 border-bottom bg-light-subtle">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3 col-sm-6">
+                            <label for="fechaInicio" class="form-label small fw-bold text-muted text-uppercase">
+                                📅 Fecha Inicio
+                            </label>
+                            <input type="date" id="fechaInicio" [(ngModel)]="filtroFechaInicio"
+                                class="form-control form-control-sm rounded-3 border-2">
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label for="fechaFin" class="form-label small fw-bold text-muted text-uppercase">
+                                📅 Fecha Fin
+                            </label>
+                            <input type="date" id="fechaFin" [(ngModel)]="filtroFechaFin"
+                                class="form-control form-control-sm rounded-3 border-2">
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label for="filtroVendedor" class="form-label small fw-bold text-muted text-uppercase">
+                                👤 Vendedor
+                            </label>
+                            <select id="filtroVendedor" [(ngModel)]="filtroVendedorId"
+                                class="form-select form-select-sm rounded-3 border-2">
+                                <option value="">Todos los vendedores</option>
+                                @for (v of vendedores; track v.id) {
+                                <option [value]="v.id">{{ v.nombre }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <button (click)="generarReporte()" id="btn-generar-reporte"
+                                class="btn btn-naranja w-100 rounded-3 fw-bold">
+                                🔍 Generar Reporte
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cargando -->
+                @if (cargandoReporte) {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-naranja" role="status"></div>
+                    <p class="mt-3 text-muted small">Cargando datos del reporte...</p>
+                </div>
+                }
+
+                <!-- Resultados -->
+                @if (reporte && !cargandoReporte) {
+                <div class="p-4">
+
+                    <!-- KPIs del Reporte -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-lg-3">
+                            <div class="reporte-kpi text-center p-3 rounded-3 bg-success-subtle">
+                                <p class="smaller text-muted text-uppercase fw-bold mb-1">Total Ventas</p>
+                                <h3 class="h4 fw-bold text-success mb-0">{{ reporte.resumen.totalVentas }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="reporte-kpi text-center p-3 rounded-3 bg-primary-subtle">
+                                <p class="smaller text-muted text-uppercase fw-bold mb-1">Transacciones</p>
+                                <h3 class="h4 fw-bold text-primary mb-0">{{ reporte.resumen.totalTransacciones }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="reporte-kpi text-center p-3 rounded-3 bg-warning-subtle">
+                                <p class="smaller text-muted text-uppercase fw-bold mb-1">Ticket Promedio</p>
+                                <h3 class="h4 fw-bold text-warning mb-0">{{ reporte.resumen.ticketPromedio }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="reporte-kpi text-center p-3 rounded-3 bg-purple-subtle">
+                                <p class="smaller text-muted text-uppercase fw-bold mb-1">Comisiones</p>
+                                <h3 class="h4 fw-bold text-purple mb-0">{{ reporte.resumen.comisionesTotales }}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <ul class="nav nav-pills nav-reporte mb-4" id="nav-reporte-admin">
+                        <li class="nav-item">
+                            <button class="nav-link" [class.active]="tabReporte === 'resumen'"
+                                (click)="tabReporte = 'resumen'" id="tab-resumen-admin">
+                                📊 Por Vendedor
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" [class.active]="tabReporte === 'detalle'"
+                                (click)="tabReporte = 'detalle'" id="tab-detalle-admin">
+                                📋 Detalle de Transacciones
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab: Resumen por vendedor -->
+                    @if (tabReporte === 'resumen') {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle custom-table-v" id="tabla-resumen-vendedores">
+                            <thead>
+                                <tr>
+                                    <th>Vendedor</th>
+                                    <th class="text-center">Transacciones</th>
+                                    <th class="text-end">Total Vendido</th>
+                                    <th class="text-end">Comisión</th>
+                                    <th style="width:160px">Participación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (v of reporte.porVendedor; track v.nombre) {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-mini-v">👤</div>
+                                            <span class="small fw-medium">{{ v.nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark fw-bold">{{ v.ventas }}</span>
+                                    </td>
+                                    <td class="text-end fw-bold text-success">{{ v.total }}</td>
+                                    <td class="text-end text-purple fw-bold">{{ v.comision }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress-v flex-grow-1">
+                                                <div class="progress-v-fill" [style.width]="v.porcentaje + '%'"></div>
+                                            </div>
+                                            <span class="smaller fw-bold text-muted">{{ v.porcentaje }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+
+                    <!-- Tab: Detalle de transacciones -->
+                    @if (tabReporte === 'detalle') {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle custom-table-v" id="tabla-detalle-transacciones">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Vendedor</th>
+                                    <th>Cliente</th>
+                                    <th>Producto</th>
+                                    <th class="text-end">Monto</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (t of reporte.detalle; track $index) {
+                                <tr>
+                                    <td><span class="small text-muted">{{ t.fecha }}</span></td>
+                                    <td><span class="small fw-medium">{{ t.vendedor }}</span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-mini-v">👤</div>
+                                            <span class="small">{{ t.cliente }}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="small">{{ t.producto }}</span></td>
+                                    <td class="text-end fw-bold">{{ t.monto }}</td>
+                                    <td>
+                                        <span class="badge bg-success-subtle text-success rounded-pill fw-bold">
+                                            {{ t.estado }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- INDICADORES RESUMEN -->
+        <div class="row g-4 mb-5">
+            @for (m of metricasGlobales; track m.titulo) {
+            <div class="col-md-6 col-xl-3">
+                <div
+                    class="kpi-card p-4 rounded-4 shadow-sm border-0 bg-white d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="smaller text-muted text-uppercase fw-bold mb-1">{{ m.titulo }}</p>
+                        <h2 class="h3 fw-bold mb-1">{{ m.valor }}</h2>
+                        <span class="sub-metrica" [class]="m.color">{{ m.sub }}</span>
+                    </div>
+                    <div class="kpi-icon-v" [class]="m.color">{{ m.icono }}</div>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="row g-4">
+
+            <!-- MAESTRO DE PEDIDOS -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 fw-bold m-0 d-flex align-items-center gap-2">
+                            📝 Listado de Pedidos Recientes
+                        </h2>
+                        <div class="d-flex gap-2">
+                            <button (click)="toggleReporte()" class="btn btn-sm btn-outline-marron">Generar Reporte 📊</button>
+                            <button class="btn btn-sm btn-naranja" routerLink="/vendedor/nueva-venta">Nuevo Pedido Manual ➕</button>
+                        </div>
+                    </div>
+
+                    <!-- Filtros de pedidos -->
+                    <div class="row g-2 mb-3 align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label small fw-bold text-muted mb-0">Desde</label>
+                            <input type="date" [(ngModel)]="filtroPedidosInicio" class="form-control form-control-sm rounded-3">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label small fw-bold text-muted mb-0">Hasta</label>
+                            <input type="date" [(ngModel)]="filtroPedidosFin" class="form-control form-control-sm rounded-3">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label small fw-bold text-muted mb-0">Estado</label>
+                            <select [(ngModel)]="filtroPedidosEstado" class="form-select form-select-sm rounded-3">
+                                <option value="">Todos</option>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Pagado">Pagado</option>
+                                <option value="Enviado">Enviado</option>
+                                <option value="Completado">Completado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button (click)="aplicarFiltrosPedidos()" class="btn btn-sm btn-naranja rounded-3 fw-bold">🔍 Filtrar</button>
+                        </div>
+                        <div class="col-auto">
+                            <button (click)="filtroPedidosInicio=''; filtroPedidosFin=''; filtroPedidosEstado=''; aplicarFiltrosPedidos()" class="btn btn-sm btn-outline-secondary rounded-3">Limpiar</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle custom-table-v">
+                            <thead>
+                                <tr>
+                                    <th>ID Pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (p of pedidosPaginados; track p.id) {
+                                <tr>
+                                    <td><span class="fw-bold text-marron">{{ p.codigo }}</span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-mini-v">👤</div>
+                                            <span class="small">{{ p.cliente }}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="small text-muted">{{ p.fecha }}</span></td>
+                                    <td><span class="fw-bold">{{ p.total }}</span></td>
+                                    <td>
+                                        <span class="badge rounded-pill" [class]="getBadgeClass(p.estado)">
+                                            {{ p.estado }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn-action-v" title="Ver Detalle" (click)="verDetalle(p)">👁️</button>
+                                        <button class="btn-action-v" title="Editar" (click)="editarPedido(p)">✏️</button>
+                                        <button class="btn-action-v text-danger" title="Cancelar" (click)="cancelarPedido(p)">🚫</button>
+                                    </td>
+                                </tr>
+                                } @empty {
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No se encontraron pedidos con los filtros aplicados.</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    @if (totalPaginas > 1) {
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="small text-muted">Mostrando {{ (paginaActual - 1) * itemsPorPagina + 1 }}–{{ paginaActual * itemsPorPagina > pedidosFiltrados.length ? pedidosFiltrados.length : paginaActual * itemsPorPagina }} de {{ pedidosFiltrados.length }}</span>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item" [class.disabled]="paginaActual === 1">
+                                    <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">«</button>
+                                </li>
+                                @for (pag of paginasArray; track pag) {
+                                <li class="page-item" [class.active]="pag === paginaActual">
+                                    <button class="page-link" (click)="cambiarPagina(pag)">{{ pag }}</button>
+                                </li>
+                                }
+                                <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+                                    <button class="page-link" (click)="cambiarPagina(paginaActual + 1)">»</button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ANALISIS LATERAL -->
+            <div class="col-lg-4">
+
+                <!-- TOP PRODUCTOS -->
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+                    <h2 class="h6 fw-bold mb-4">⭐ Productos Estrella</h2>
+                    <div class="list-top-products">
+                        @for (prod of topProductos; track prod.nombre) {
+                        <div class="prod-item mb-3 pb-3 border-bottom-dashed">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold text-marron">{{ prod.nombre }}</span>
+                                <span class="badge bg-soft-naranja text-marron">{{ prod.ventas }} vtas</span>
+                            </div>
+                            <div class="stock-info d-flex align-items-center gap-2">
+                                <div class="progress-v flex-grow-1">
+                                    <div class="progress-v-fill"
+                                        [style.width]="(prod.stock > 100 ? 100 : prod.stock) + '%'"></div>
+                                </div>
+                                <span class="smaller text-muted">{{ prod.stock }} unid. disp.</span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- ALERTAS DE VENTAS -->
+                <div class="alert-box-v p-4 rounded-4 bg-marron-dark text-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="fs-2">📈</span>
+                        <h3 class="h6 fw-bold m-0">Resumen del Mes</h3>
+                    </div>
+                    @if (analisisHoy.cargando) {
+                        <div class="spinner-border spinner-border-sm text-light" role="status"></div>
+                    } @else {
+                        <p class="smaller opacity-75 mb-4">{{ analisisHoy.texto }}</p>
+                    }
+                    <button (click)="verReporte()" class="btn btn-light w-100 rounded-pill fw-bold btn-sm">
+                        Ver Reporte Completo 📊
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DETALLE / EDICION PEDIDO -->
+    <div class="modal fade" id="modalDetallePedido" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                @if (pedidoDetalle) {
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">
+                        {{ editando ? 'Editar Pedido' : 'Detalle Pedido' }} {{ pedidoDetalle.codigo }}
+                    </h5>
+                    <button type="button" class="btn-close" (click)="cerrarDetalle()"></button>
+                </div>
+                <div class="modal-body">
+                    @if (msgExito) {
+                    <div class="alert alert-success py-2">{{ msgExito }}</div>
+                    }
+                    @if (msgError) {
+                    <div class="alert alert-danger py-2">{{ msgError }}</div>
+                    }
+
+                    <!-- MODO DETALLE -->
+                    @if (!editando) {
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-3">
+                            <p class="small text-muted mb-1">Cliente</p>
+                            <p class="fw-bold mb-0">{{ pedidoDetalle.cliente }}</p>
+                        </div>
+                        <div class="col-sm-3">
+                            <p class="small text-muted mb-1">Fecha</p>
+                            <p class="fw-bold mb-0">{{ pedidoDetalle.fecha }}</p>
+                        </div>
+                        <div class="col-sm-3">
+                            <p class="small text-muted mb-1">Método de Pago</p>
+                            <p class="fw-bold mb-0">{{ pedidoDetalle.metodo }}</p>
+                        </div>
+                        <div class="col-sm-3">
+                            <p class="small text-muted mb-1">Total</p>
+                            <p class="fw-bold text-success mb-0">{{ pedidoDetalle.total }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="small text-muted">Estado: </span>
+                        <span class="badge rounded-pill" [class]="getBadgeClass(pedidoDetalle.estado)">{{ pedidoDetalle.estado }}</span>
+                    </div>
+                    }
+
+                    <!-- MODO EDICION -->
+                    @if (editando) {
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-bold">Nombre envío</label>
+                            <input type="text" [(ngModel)]="editForm.nombre_envio" class="form-control form-control-sm rounded-3">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-bold">Email envío</label>
+                            <input type="email" [(ngModel)]="editForm.email_envio" class="form-control form-control-sm rounded-3">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-bold">Dirección envío</label>
+                            <input type="text" [(ngModel)]="editForm.direccion_envio" class="form-control form-control-sm rounded-3">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-bold">Ciudad envío</label>
+                            <input type="text" [(ngModel)]="editForm.ciudad_envio" class="form-control form-control-sm rounded-3">
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label small fw-bold">Método de pago</label>
+                            <select [(ngModel)]="editForm.metodo_pago" class="form-select form-select-sm rounded-3">
+                                <option value="tarjeta">Tarjeta</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label small fw-bold">Estado</label>
+                            <select [(ngModel)]="editForm.estado" class="form-select form-select-sm rounded-3">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="pagado">Pagado</option>
+                                <option value="en_camino">En Camino</option>
+                                <option value="entregado">Entregado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label small fw-bold">Total</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" [value]="pedidoDetalle.total" disabled>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Notas</label>
+                            <textarea [(ngModel)]="editForm.notas" class="form-control form-control-sm rounded-3" rows="2"></textarea>
+                        </div>
+                    </div>
+                    }
+
+                    @if (cargandoDetalle) {
+                    <div class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm text-naranja" role="status"></div>
+                    </div>
+                    }
+
+                    @if (itemsDetalle.length > 0) {
+                    <h6 class="fw-bold mb-2 mt-3">Productos</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of itemsDetalle; track $index) {
+                                <tr>
+                                    <td>{{ item.producto_nombre }}</td>
+                                    <td class="text-center">{{ item.cantidad }}</td>
+                                    <td class="text-end">${{ item.precio_unitario }}</td>
+                                    <td class="text-end fw-bold">${{ item.subtotal }}</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    @if (editando) {
+                    <button type="button" class="btn btn-sm btn-secondary rounded-3" (click)="cancelarEdicion()">Cancelar</button>
+                    <button type="button" class="btn btn-sm btn-naranja rounded-3 fw-bold" (click)="guardarEdicion()" [disabled]="guardandoEdicion">
+                        @if (guardandoEdicion) { <span class="spinner-border spinner-border-sm me-1"></span> } Guardar Cambios
+                    </button>
+                    } @else {
+                    <button type="button" class="btn btn-sm btn-secondary rounded-3" (click)="cerrarDetalle()">Cerrar</button>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>

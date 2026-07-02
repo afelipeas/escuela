@@ -1,0 +1,15 @@
+.comentario-item {
+    transition: background-color 0.2s ease;
+}
+
+.comentario-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.smaller {
+    font-size: 0.75rem;
+}
+
+.c-avatar {
+    font-size: 1.2rem;
+}

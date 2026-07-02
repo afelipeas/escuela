@@ -1,0 +1,117 @@
+/* ================================================================
+   ESTILOS GLOBALES — Escuela Dominical Virtual
+   Sistema de diseño con paleta de colores cálidos
+   ================================================================ */
+
+/* === VARIABLES GLOBALES DE COLOR Y DISEÑO === */
+:root {
+  /* Paleta de colores cálidos */
+  --color-naranja-principal: #F97316;
+  --color-naranja-oscuro:    #EA580C;
+  --color-ambar:             #F59E0B;
+  --color-ambar-claro:       #FDE68A;
+  --color-rojo-calido:       #DC2626;
+  --color-rojo-suave:        #EF4444;
+  --color-marron-oscuro:     #78350F;
+  --color-marron-medio:      #92400E;
+
+  /* Fondos */
+  --color-fondo-crema:       #FEF9F0;
+  --color-fondo-claro:       #FFFBEB;
+  --color-blanco:            #FFFFFF;
+
+  /* Textos */
+  --color-texto-principal:   #1C0A00;
+  --color-texto-suave:       #6B5344;
+  --color-texto-claro:       #A08070;
+
+  /* Tipografía */
+  --fuente-titulos:   'Poppins', sans-serif;
+  --fuente-cuerpo:    'Inter', sans-serif;
+
+  /* Espaciado base */
+  --espaciado-xs:  0.25rem;
+  --espaciado-sm:  0.5rem;
+  --espaciado-md:  1rem;
+  --espaciado-lg:  1.5rem;
+  --espaciado-xl:  2rem;
+  --espaciado-2xl: 3rem;
+  --espaciado-3xl: 5rem;
+
+  /* Bordes */
+  --radio-sm:   8px;
+  --radio-md:   16px;
+  --radio-lg:   24px;
+  --radio-pill: 50px;
+
+  /* Sombras */
+  --sombra-sm:  0 2px 8px rgba(0,0,0,0.06);
+  --sombra-md:  0 8px 24px rgba(0,0,0,0.08);
+  --sombra-lg:  0 16px 48px rgba(0,0,0,0.10);
+  --sombra-naranja: 0 6px 20px rgba(249, 115, 22, 0.35);
+
+  /* Transición estándar */
+  --transicion: all 0.3s ease;
+}
+
+/* === RESET Y BASE === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--fuente-cuerpo);
+  color: var(--color-texto-principal);
+  background-color: var(--color-blanco);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+/* === UTILIDADES GENERALES === */
+.contenedor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.solo-mobile { display: none; }
+
+@media (max-width: 768px) {
+  .solo-mobile    { display: block; }
+  .ocultar-mobile { display: none !important; }
+}

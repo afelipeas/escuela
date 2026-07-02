@@ -1,0 +1,61 @@
+.bg-light-soft {
+    background-color: #fdfbf7;
+}
+
+.text-marron {
+    color: #451a03;
+}
+
+.bg-marron {
+    background-color: #78350f;
+}
+
+.border-marron {
+    border-color: #451a03 !important;
+}
+
+.btn-outline-marron {
+    color: #451a03;
+    border-color: #451a03;
+}
+
+.btn-outline-marron:hover {
+    background-color: #451a03;
+    color: white;
+}
+
+.border-dashed {
+    border: 2px dashed #e5e7eb;
+}
+
+.bg-crema {
+    background-color: #fffbeb;
+}
+
+.table th {
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+/* PROGRESS BAR STYLES */
+.progress-mini {
+    width: 100%;
+    min-width: 130px;
+    background-color: #e5e7eb !important; /* light gray base */
+    display: block;
+}
+
+.progress-fill {
+    height: 100%;
+    display: block;
+    background-color: #78350f !important; /* rich brown progress */
+    transition: width 0.3s ease-in-out;
+}
+
+.fs-7 {
+    font-size: 0.7rem;
+}

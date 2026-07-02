@@ -1,0 +1,111 @@
+<div class="comentarios-page p-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a routerLink="/docente/cursos">Mis Cursos</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/docente/cursos', cursoId, 'lecciones']">{{ curso()?.titulo || 'Curso' }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Comentarios</li>
+        </ol>
+    </nav>
+
+    <header class="mb-4">
+        <h1 class="h3 fw-bold mb-1">💬 Comentarios de Lección</h1>
+        <p class="text-muted small mb-0">
+            Curso: <span class="text-primary fw-bold">{{ curso()?.titulo }}</span> &middot;
+            Lección: <span class="fw-bold">{{ leccion()?.titulo || 'Cargando...' }}</span>
+        </p>
+    </header>
+
+    @if (cargando()) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="text-muted mt-2">Cargando comentarios...</p>
+        </div>
+    } @else {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                    <h5 class="fw-bold mb-4">Nuevo Comentario</h5>
+                    <div class="d-flex gap-3">
+                        <div class="flex-grow-1">
+                            <textarea class="form-control rounded-4 p-3 mb-2" rows="3"
+                                [(ngModel)]="nuevoComentarioTexto"
+                                [disabled]="enviando()"
+                                placeholder="Escribe un comentario o respuesta para los estudiantes..."></textarea>
+                            <button class="btn btn-primary btn-sm rounded-pill px-4"
+                                (click)="enviarComentario()"
+                                [disabled]="!nuevoComentarioTexto().trim() || enviando()">
+                                {{ enviando() ? 'Publicando...' : 'Publicar Comentario' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h5 class="fw-bold mb-4">
+                        Comentarios
+                        @if (comentarios().length > 0) {
+                            <span class="badge bg-primary rounded-pill ms-2">{{ comentarios().length }}</span>
+                        }
+                    </h5>
+
+                    <div class="comentarios-list d-flex flex-column gap-3">
+                        @for (com of comentarios(); track com.id) {
+                            <div class="comentario-item d-flex gap-3 p-3 rounded-3 border border-light">
+                                <div class="c-avatar rounded-circle bg-light d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px; font-size: 1.2rem; flex-shrink: 0;">
+                                    {{ com.foto_url || '👤' }}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <strong class="small">{{ com.nombre }}</strong>
+                                        @if (com.rol === 'docente') {
+                                            <span class="badge bg-primary bg-opacity-10 text-primary smaller py-0 px-2 rounded-pill">Docente</span>
+                                        }
+                                        @if (com.rol === 'estudiante') {
+                                            <span class="badge bg-success bg-opacity-10 text-success smaller py-0 px-2 rounded-pill">Estudiante</span>
+                                        }
+                                        <span class="smaller text-muted">• {{ com.fecha }}</span>
+                                    </div>
+                                    <p class="small text-muted mb-0">"{{ com.texto }}"</p>
+                                </div>
+                                <div class="actions d-flex align-items-start">
+                                    <button class="btn btn-light btn-sm rounded-circle text-danger" 
+                                        (click)="eliminarComentario(com.id)"
+                                        title="Eliminar comentario">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        } @empty {
+                            <div class="text-center py-5 text-muted">
+                                <p class="fs-1 mb-2">💬</p>
+                                <p class="small">No hay comentarios aún en esta lección.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-3">
+                    <h6 class="fw-bold mb-3">📊 Resumen</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="small text-muted">Total comentarios:</span>
+                        <span class="fw-bold">{{ comentarios().length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Lección:</span>
+                        <span class="fw-bold small text-truncate ms-2">{{ leccion()?.titulo }}</span>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h6 class="fw-bold mb-3">🔗 Acciones</h6>
+                    <a [routerLink]="['/docente/cursos', cursoId, 'lecciones']" class="btn btn-light w-100 rounded-pill mb-2">
+                        ← Volver a Lecciones
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

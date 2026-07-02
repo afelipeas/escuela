@@ -1,0 +1,155 @@
+<div class="leccion-page min-vh-100 bg-light-soft">
+    <!-- NAVBAR DEL AULA (MINIMA) -->
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom sticky-top">
+        <div class="container-fluid px-4">
+            <a routerLink="/estudiante/dashboard" class="btn-back-aula">
+                <span>←</span> <span class="d-none d-sm-inline">Volver al Aula</span>
+            </a>
+            <div class="lesson-header-title text-center flex-grow-1">
+                <span class="materia-tag">{{ leccion().materia }}</span>
+                <h1 class="h6 fw-bold m-0 text-truncate px-3">{{ leccion().titulo }}</h1>
+            </div>
+            <div class="user-status d-none d-md-flex">
+                <span class="pts-badge">💎 {{ dataService.puntosFeActuales() | number }}</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4 px-lg-5">
+        <div class="row g-4">
+            <!-- ÁREA PRINCIPAL: VIDEO Y CONTENIDO -->
+            <div class="col-xl-8">
+                <!-- REPRODUCTOR DE VIDEO -->
+                <div class="video-container shadow-lg rounded-4 overflow-hidden bg-black mb-4">
+                    <iframe [src]="safeVideoUrl()" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <!-- INFO DE LA LECCIÓN -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h2 class="h4 fw-bold text-marron">{{ leccion().titulo }}</h2>
+                        <div class="text-end">
+                            @if (!leccion().completada && !videoTerminado() && leccion().video_url) {
+                                <div class="video-progress-info mb-2">
+                                    <div class="progress-video-bar">
+                                        <div class="progress-video-fill" [style.width.%]="progresoVideo"></div>
+                                    </div>
+                                    <span class="smaller text-muted">
+                                        ▶️ {{ tiempoRestante > 0 ? formatTime(tiempoRestante) + ' restantes' : '¡Listo para completar!' }}
+                                    </span>
+                                </div>
+                            }
+                            <button (click)="marcarComoCompletada()" class="btn-completar"
+                                [class.done]="leccion().completada"
+                                [disabled]="!videoTerminado() && !leccion().completada">
+                                {{ leccion().completada ? '✅ Completada' : (videoTerminado() ? '🎓 Finalizar Lección' : '▶️ Viendo video...') }}
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-muted">{{ leccion().descripcion }}</p>
+
+                    <hr class="my-4 op-10">
+
+                    <h3 class="h6 fw-bold mb-3">Materiales de apoyo</h3>
+                    <div class="row g-3">
+                        @for (mate of materiales(); track mate.nombre) {
+                        <div class="col-md-4">
+                            <a href="#" (click)="$event.preventDefault()"
+                                class="material-card-d d-flex align-items-center gap-3 p-3 rounded-4">
+                                <div class="mat-icon">{{ mate.icono }}</div>
+                                <div class="mat-info">
+                                    <p class="mb-0 fw-bold small text-marron">{{ mate.nombre }}</p>
+                                    <span class="text-muted smaller">{{ mate.tamano }}</span>
+                                </div>
+                            </a>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE COMENTARIOS -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h3 class="h5 fw-bold mb-4">Preguntas y Comentarios</h3>
+                    
+                    <!-- Formulario de envío -->
+                    <div class="comment-input-wrap d-flex gap-3 mb-5">
+                        <div class="c-avatar">{{ authService.currentUser()?.foto || '🎒' }}</div>
+                        <div class="flex-grow-1">
+                            <textarea class="form-control rounded-4 p-3 mb-2" rows="2"
+                                [(ngModel)]="nuevoComentario"
+                                [disabled]="enviandoComentario()"
+                                placeholder="Escribe tu duda, saludo o comentario positivo aquí..."></textarea>
+                            <button 
+                                class="btn btn-marron btn-sm rounded-pill px-4"
+                                (click)="enviarComentario()"
+                                [disabled]="!nuevoComentario().trim() || enviandoComentario()">
+                                {{ enviandoComentario() ? 'Publicando...' : 'Publicar' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="comments-list d-grid gap-4">
+                        @for (com of comentarios(); track com.id) {
+                        <div class="comment-item d-flex gap-3">
+                            <div class="c-avatar-small">{{ com.foto_url || '👤' }}</div>
+                            <div class="c-body">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <strong class="small">{{ com.nombre }}</strong>
+                                    @if (com.rol === 'docente') {
+                                        <span class="badge bg-marron-light text-marron smaller py-0 px-2 rounded-pill">Docente</span>
+                                    }
+                                    <span class="smaller text-muted">• {{ com.fecha | date:'short' }}</span>
+                                </div>
+                                <p class="small text-muted mb-0">"{{ com.texto }}"</p>
+                            </div>
+                        </div>
+                        } @empty {
+                            <div class="text-center py-4 text-muted small">
+                                💬 Sé el primero en dejar un comentario positivo.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- LATERAL: LISTA DE REPRODUCCIÓN -->
+            <div class="col-xl-4">
+                <div class="card border-0 shadow-sm rounded-4 bg-white sticky-sidebar overflow-hidden">
+                    <div class="list-header p-4 bg-marron-dark text-white">
+                        <h3 class="h6 fw-bold m-0">Contenido del Módulo</h3>
+                        <p class="smaller m-0 opacity-75">{{ leccionesMismoCurso().length }} Lecciones</p>
+                    </div>
+
+                    <div class="lesson-list">
+                        @for (item of leccionesMismoCurso(); track item.id) {
+                        <a [routerLink]="['/aula/leccion', item.id]" 
+                           class="lesson-item d-flex align-items-center gap-3 p-3 text-decoration-none"
+                           [class.active]="item.id == leccion().id">
+                            <div class="play-indicator">
+                                {{ item.id == leccion().id ? '▶' : item.orden }}
+                            </div>
+                            <div class="lesson-details">
+                                <p class="mb-0 fw-bold small text-marron">{{ item.titulo }}</p>
+                                <span class="smaller text-muted">{{ item.duracion_min }} min</span>
+                            </div>
+                        </a>
+                        }
+                    </div>
+
+                    <div class="p-4 border-top">
+                        <div class="d-flex justify-content-between small fw-bold mb-2">
+                            <span>Tu progreso en este módulo</span>
+                            <span>{{ (leccion().completada ? 100 : 25) }}%</span>
+                        </div>
+                        <div class="progress-l">
+                            <div class="progress-l-bar" [style.width]="(leccion().completada ? 100 : 25) + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

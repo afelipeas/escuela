@@ -1,0 +1,83 @@
+<div class="logros-page-wrapper p-4 min-vh-100">
+    
+    <!-- CABECERA PREMIUM -->
+    <header class="hof-header text-center mb-5 p-5 rounded-5 shadow-lg bg-gradient-marron text-white">
+        <div class="hof-badge-main mb-3">🏅</div>
+        <h1 class="display-5 fw-bold">Mi Salón de la Fama</h1>
+        <p class="opacity-75 lead">Honrando tu dedicación y crecimiento en la Palabra</p>
+    </header>
+
+    <div class="container">
+        <div class="row g-4 mb-5">
+            <!-- TARJETA DE RANGO ACTUAL -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-5 overflow-hidden h-100 bg-white">
+                    <div class="p-4 d-flex align-items-center gap-4">
+                        <div class="rank-avatar">
+                            <span class="rank-emoji">🛡️</span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="text-muted small fw-bold text-uppercase">Nivel de Discípulo</span>
+                            <h2 class="h3 fw-bold text-marron mb-1">{{ rango() }}</h2>
+                            <p class="small text-muted mb-3">Sigue aprendiendo para alcanzar el siguiente rango</p>
+                            
+                            <div class="rank-progress-bar">
+                                <div class="rank-progress-fill" [style.width.%]="progresoRango()"></div>
+                            </div>
+                            <div class="d-flex justify-content-between x-small fw-bold mt-2 text-marron">
+                                <span>PROGRESO</span>
+                                <span>{{ progresoRango() | number:'1.0-0' }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA DE PUNTOS TOTALES -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-5 bg-marron-dark p-4 h-100 d-flex flex-column justify-content-center text-center">
+                    <span class="points-card-title x-small mb-2">Puntos de Fe Totales</span>
+                    <div class="display-4 fw-bold mb-0 points-value">💎 {{ stats().puntos | number }}</div>
+                    <p class="smaller mt-2 points-footer">¡Has sido un administrador fiel de tu tiempo!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE TROFEOS -->
+        <div class="mb-4">
+            <h3 class="h4 fw-bold text-marron mb-4 d-flex align-items-center gap-2">
+                <span>🏆</span> Mis Trofeos Ganados
+            </h3>
+
+            @if (cargando()) {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-marron" role="status"></div>
+                </div>
+            } @else {
+                <div class="row g-4">
+                    @for (logro of logros(); track logro.id) {
+                    <div class="col-md-4 col-lg-3">
+                        <div class="trophy-card text-center p-4 bg-white rounded-5 shadow-sm hover-up border-bottom border-5 border-ambar">
+                            <div class="trophy-icon-wrap mb-3">
+                                {{ logro.icono }}
+                            </div>
+                            <h4 class="h6 fw-bold mb-2">{{ logro.titulo }}</h4>
+                            <p class="x-small text-muted mb-3">{{ logro.descripcion }}</p>
+                            <span class="badge bg-ambar-light text-marron rounded-pill x-small py-1 px-3 fw-bold">Ganado el {{ logro.fecha_obtenido | date:'shortDate' }}</span>
+                        </div>
+                    </div>
+                    } @empty {
+                        <div class="col-12">
+                            <div class="empty-hall text-center py-5 bg-white rounded-5 shadow-sm border-dashed">
+                                <div class="display-1 mb-3 opacity-25">🎯</div>
+                                <h4 class="fw-bold">Aún no hay trofeos en tu vitrina</h4>
+                                <p class="text-muted">¡Completa tu primera lección para empezar a llenar tu salón!</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,171 @@
+<div class="soporte-vendedor-container p-4">
+    <!-- ENCABEZADO BANNER -->
+    <div class="support-banner mb-4">
+        <div class="banner-content">
+            <h2>💬 Mesa de Soporte y Atención al Cliente</h2>
+            <p>Monitorea consultas comerciales, dudas académicas, inconformidades con notas y reportes sobre canjes de la tienda virtual.</p>
+        </div>
+    </div>
+
+    <!-- FILTROS Y CONTADORES -->
+    <div class="support-toolbar mb-4">
+        <div class="tabs-filter">
+            <button class="tab-btn" [class.active]="filtroEstado === 'Todos'" (click)="filtroEstado = 'Todos'">
+                🗂️ Todos <span class="badge-count bg-marron">{{ tickets.length }}</span>
+            </button>
+            <button class="tab-btn" [class.active]="filtroEstado === 'Pendientes'" (click)="filtroEstado = 'Pendientes'">
+                ⏳ Pendientes <span class="badge-count bg-danger">{{ totalPendientes }}</span>
+            </button>
+            <button class="tab-btn" [class.active]="filtroEstado === 'Resuelto'" (click)="filtroEstado = 'Resuelto'">
+                ✅ Resueltos <span class="badge-count bg-success">{{ totalResueltos }}</span>
+            </button>
+        </div>
+        <button class="btn-refresh" (click)="cargarTickets()" [disabled]="cargando">
+            🔄 {{ cargando ? 'Cargando...' : 'Sincronizar' }}
+        </button>
+    </div>
+
+    <!-- LISTADO DE TICKETS -->
+    @if (cargando) {
+        <div class="loading-state p-5 text-center">
+            <span class="spinner-large">⏳</span>
+            <p class="mt-3 text-muted fw-bold">Sincronizando bandeja de tickets...</p>
+        </div>
+    } @else {
+        @if (ticketsFiltrados.length === 0) {
+            <div class="empty-state p-5 text-center bg-white rounded-4 shadow-sm border border-light">
+                <span class="empty-icon">🎉</span>
+                <h3 class="mt-3">¡Bandeja Limpia!</h3>
+                <p class="text-muted">No hay tickets activos que coincidan con el estado seleccionado.</p>
+            </div>
+        } @else {
+            <div class="tickets-grid">
+                @for (ticket of ticketsFiltrados; track ticket.id) {
+                    <div class="ticket-row-card" [class.resolved]="ticket.estado === 'Resuelto'" (click)="selectTicket(ticket)">
+                        <div class="ticket-left">
+                            <div class="avatar-circle">👤</div>
+                            <div class="ticket-meta">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <h4 class="student-name mb-0">{{ ticket.usuario }}</h4>
+                                    <span class="student-email text-muted">({{ ticket.email }})</span>
+                                </div>
+                                <h5 class="ticket-subject mb-1 mt-1">{{ ticket.asunto }}</h5>
+                                <div class="d-flex align-items-center gap-2 mt-1">
+                                    <span class="category-badge" 
+                                          [class.badge-yellow]="ticket.categoria.includes('Tienda')"
+                                          [class.badge-blue]="ticket.categoria.includes('Puntos')"
+                                          [class.badge-purple]="ticket.categoria.includes('Calificaciones')"
+                                          [class.badge-orange]="ticket.categoria.includes('Técnico')">
+                                        {{ ticket.categoria }}
+                                    </span>
+                                    <span class="ticket-date">🕒 {{ ticket.fecha }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ticket-right">
+                            <span class="status-indicator" 
+                                  [class.bg-orange-soft]="ticket.estado === 'Pendientes' || ticket.estado === 'Pendiente'"
+                                  [class.bg-green-soft]="ticket.estado === 'Resuelto'">
+                                {{ ticket.estado === 'Pendiente' ? '⏳ Pendiente' : '✅ Resuelto' }}
+                            </span>
+                            <div class="ticket-actions mt-2">
+                                <button class="btn-action btn-atender">💬 Atender</button>
+                                @if (ticket.estado === 'Pendiente') {
+                                    <button class="btn-action btn-resolve-quick" (click)="marcarResueltoDirecto(ticket, $event)">✓</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+
+    <!-- MODAL DETALLE Y RESPUESTA (GLASSMORPHISM DRAWER) -->
+    @if (activeTicket) {
+        <div class="modal-backdrop" (click)="closeModal()">
+            <div class="modal-card-premium" (click)="$event.stopPropagation()">
+                <!-- CABECERA MODAL -->
+                <div class="modal-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="modal-header-icon">💬</span>
+                        <div>
+                            <h3 class="mb-0">Ticket #{{ activeTicket.id }}</h3>
+                            <small class="text-muted">Enviado el {{ activeTicket.fecha }}</small>
+                        </div>
+                    </div>
+                    <button class="btn-close-modal" (click)="closeModal()">✕</button>
+                </div>
+
+                <!-- CONTENIDO DETALLE -->
+                <div class="modal-body p-4">
+                    <!-- Ficha del Solicitante -->
+                    <div class="requester-info-card mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-large">👤</div>
+                            <div>
+                                <h4 class="mb-0 fw-bold">{{ activeTicket.usuario }}</h4>
+                                <p class="mb-0 text-orange font-monospace small">{{ activeTicket.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje del Ticket -->
+                    <div class="ticket-message-bubble mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="bubble-category">{{ activeTicket.categoria }}</span>
+                            <span class="status-indicator-inline" [class.resolved]="activeTicket.estado === 'Resuelto'">
+                                {{ activeTicket.estado }}
+                            </span>
+                        </div>
+                        <h4 class="bubble-subject mb-2">{{ activeTicket.asunto }}</h4>
+                        <p class="bubble-content">{{ activeTicket.mensaje }}</p>
+                    </div>
+
+                    <!-- RESPUESTA / CAJA DE TEXTO -->
+                    <div class="response-section">
+                        <h3 class="section-title">✍️ Escribir Respuesta al Cliente</h3>
+
+                        @if (mensajeExito) {
+                            <div class="alert alert-success-premium mb-3 animate-slide">
+                                <span class="alert-icon">✓</span>
+                                <div class="alert-text">
+                                    <strong>Respuesta Guardada</strong>
+                                    <p>{{ mensajeExito }}</p>
+                                </div>
+                            </div>
+                        }
+
+                        @if (mensajeError) {
+                            <div class="alert alert-danger-premium mb-3 animate-slide">
+                                <span class="alert-icon">⚠️</span>
+                                <div class="alert-text">
+                                    <strong>Ocurrió un error</strong>
+                                    <p>{{ mensajeError }}</p>
+                                </div>
+                            </div>
+                        }
+
+                        @if (activeTicket.estado === 'Resuelto') {
+                            <div class="alert-resolved-info p-3 rounded-3 mb-3">
+                                🔒 Este ticket ya figura como **Resuelto**. Se guardó la respuesta en la bitácora de soporte.
+                            </div>
+                        } @else {
+                            <div class="form-group mb-3">
+                                <textarea [(ngModel)]="respuestaTexto" rows="4" placeholder="Escribe aquí la respuesta formal y clara que se registrará en la bitácora y enviará al correo del alumno..." class="form-control-premium"></textarea>
+                            </div>
+
+                            <button class="btn-send-reply" [disabled]="enviandoRespuesta" (click)="enviarRespuesta()">
+                                @if (enviandoRespuesta) {
+                                    <span>⏳ Procesando...</span>
+                                } @else {
+                                    <span>🚀 Enviar Respuesta & Marcar como Resuelto</span>
+                                }
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,162 @@
+<div class="reportes-vendedor-container">
+    <!-- CABECERA ADAPTABLE -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h3 fw-bold mb-0 text-marron">Análisis de Rendimiento Comercial</h1>
+            <p class="text-muted small mb-0">Seguimiento de ventas, comisiones y metas mensuales en tiempo real</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button (click)="exportarReporte('PDF')" class="btn btn-outline-danger btn-sm rounded-pill fw-bold">
+                Descargar PDF 📄
+            </button>
+            <button (click)="exportarReporte('EXCEL')" class="btn btn-outline-success btn-sm rounded-pill fw-bold">
+                Exportar CSV 📊
+            </button>
+        </div>
+    </div>
+
+    <!-- FILTROS DE PERÍODO -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-5 col-sm-6">
+                <label for="fechaInicio" class="form-label small fw-bold text-muted text-uppercase mb-1 d-block">
+                    📅 Fecha Inicio
+                </label>
+                <input type="date" id="fechaInicio" [(ngModel)]="filtroFechaInicio"
+                    class="form-control form-control-sm rounded-3 border-2">
+            </div>
+            <div class="col-md-5 col-sm-6">
+                <label for="fechaFin" class="form-label small fw-bold text-muted text-uppercase mb-1 d-block">
+                    📅 Fecha Fin
+                </label>
+                <input type="date" id="fechaFin" [(ngModel)]="filtroFechaFin"
+                    class="form-control form-control-sm rounded-3 border-2">
+            </div>
+            <div class="col-md-2">
+                <button (click)="generarReporte()" id="btn-generar-reporte-vendedor"
+                    class="btn btn-naranja btn-sm w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center gap-2">
+                    🔍 Filtrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid p-0">
+
+        <!-- CARGANDO REPORTE -->
+        @if (cargandoReporte) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-naranja" role="status"></div>
+            <p class="mt-3 text-muted small">Cargando datos del reporte...</p>
+        </div>
+        } @else {
+
+        <!-- RESUMEN DE RENDIMIENTO -->
+        <div class="row g-4 mb-4">
+            @for (m of metricasReporte; track m.titulo) {
+            <div class="col-md-6 col-xl-3">
+                <div class="report-kpi p-4 rounded-4 shadow-sm border-0 bg-white">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="report-kpi-icon" [class]="m.color">{{ m.icono }}</span>
+                        <span class="sub-metrica" [class]="m.color">{{ m.sub }}</span>
+                    </div>
+                    <p class="smaller text-muted text-uppercase fw-bold mb-1">{{ m.titulo }}</p>
+                    <h2 class="h4 fw-bold mb-0 text-marron">{{ m.valor }}</h2>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="row g-4">
+
+            <!-- GRÁFICO SIMULADO (HISTORIAL) -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+                    <h2 class="h6 fw-bold mb-4 d-flex align-items-center gap-2">
+                        📅 Historial de Ventas por Día
+                    </h2>
+
+                    <div class="report-chart-placeholder d-flex align-items-end justify-content-around gap-2 mb-4">
+                        @for (b of barrasGrafico; track b.fecha) {
+                        <div class="d-flex flex-column align-items-center justify-content-end h-100" style="width: 50px;">
+                            <div class="chart-bar" [style.height]="b.altura" [title]="b.total"></div>
+                            <span class="smaller text-muted mt-2 fw-semibold" style="font-size: 0.68rem;">{{ b.fecha }}</span>
+                        </div>
+                        } @empty {
+                        <p class="text-muted smaller text-center py-4 w-100">No hay ventas registradas en este período</p>
+                        }
+                    </div>
+
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm custom-report-table">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th class="text-center">Transacciones</th>
+                                    <th class="text-end">Monto Total</th>
+                                    <th class="text-end text-success">Comisión (5%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (linea of historialVentas; track linea.fecha) {
+                                <tr>
+                                    <td><span class="small fw-medium">{{ linea.fecha }}</span></td>
+                                    <td class="text-center">{{ linea.transacciones }}</td>
+                                    <td class="text-end fw-bold">{{ linea.total }}</td>
+                                    <td class="text-end text-success fw-bold">{{ linea.comision }}</td>
+                                </tr>
+                                } @empty {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3 small">
+                                        No se encontraron ventas para este período
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALISIS DE META -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+                    <h2 class="h6 fw-bold mb-4 text-center">🏆 Meta de Ventas Mensual</h2>
+
+                    <div class="goal-gauge mx-auto mb-4 position-relative">
+                        <svg viewBox="0 0 100 50" class="gauge-svg">
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#E2E8F0" stroke-width="12" />
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#F97316" stroke-width="12"
+                                stroke-dasharray="100" [attr.stroke-dashoffset]="strokeDashOffsetGauge" />
+                        </svg>
+                        <div class="gauge-value text-center">
+                            <h3 class="h2 fw-extrabold m-0">{{ porcentajeMeta }}%</h3>
+                            <p class="smaller text-muted m-0">Completado</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-crema-naranja rounded-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small fw-bold">Cuota Mes:</span>
+                            <span class="small">{{ vendedor.cuotaMes }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small fw-bold">Faltan:</span>
+                            <span class="small text-danger">{{ faltanteMeta }}</span>
+                        </div>
+                        <hr class="my-2 opacity-10">
+                        <p class="smaller text-marron mb-0 text-center fw-medium">
+                            @if (porcentajeMeta >= 100) {
+                                ¡Excelente trabajo, {{ vendedor.nombre }}! Has superado tu meta mensual con éxito. 🎉🏆
+                            } @else {
+                                ¡Vas por buen camino, {{ vendedor.nombre }}! Estás al {{ porcentajeMeta }}% de superar tu meta personal. 🚀
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        }
+    </div>
+</div>

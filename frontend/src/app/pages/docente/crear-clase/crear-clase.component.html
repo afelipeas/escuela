@@ -1,0 +1,164 @@
+<div class="crear-clase-container p-4">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="row g-0">
+            <div class="col-lg-5 bg-marron-docente p-5 text-white d-flex flex-column justify-content-center">
+                <h1 class="display-6 fw-bold mb-4">✨ Crear Nueva Lección</h1>
+                <p class="opacity-75">Planifica tu próxima sesión, define el grupo y prepara el material para que tus
+                    alumnos estén listos el domingo.</p>
+                <div class="mt-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="fs-4">📚</span>
+                        <span>Define el tema central</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="fs-4">👥</span>
+                        <span>Elige el grupo objetivo</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7 p-5 bg-white">
+                <form (ngSubmit)="guardarClase()">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small uppercase">Título de la Lección</label>
+                        <input type="text" class="form-control form-control-lg bg-light border-0"
+                            [(ngModel)]="clase.titulo" name="titulo" placeholder="Ej: La Creación del Mundo">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold text-muted small uppercase mb-0">Curso</label>
+                                <button type="button" class="btn btn-link btn-sm text-primary p-0 fw-bold text-decoration-none" (click)="mostrarModalCurso.set(true)">
+                                    ⚡ Crear Curso Completo
+                                </button>
+                            </div>
+                            <select class="form-select form-control-lg bg-light border-0" [(ngModel)]="clase.id_curso"
+                                name="id_curso" required>
+                                @for (curso of cursos(); track curso.id) {
+                                    <option [value]="curso.id">{{ curso.titulo }}</option>
+                                } @empty {
+                                    <option value="0" disabled>No tienes cursos disponibles</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted small uppercase">Grupo (Opcional)</label>
+                            <select class="form-select form-control-lg bg-light border-0" [(ngModel)]="clase.grupo"
+                                name="grupo">
+                                <option value="">General (Todos)</option>
+                                <option value="A">Grupo A (4-6 años)</option>
+                                <option value="B">Grupo B (7-9 años)</option>
+                                <option value="C">Grupo C (10-12 años)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted small uppercase">Fecha</label>
+                            <input type="date" class="form-control form-control-lg bg-light border-0"
+                                [(ngModel)]="clase.fecha" name="fecha" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted small uppercase">Hora</label>
+                            <input type="time" class="form-control form-control-lg bg-light border-0"
+                                [(ngModel)]="clase.hora" name="hora" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted small uppercase">URL del Video (Opcional)</label>
+                            <input type="url" class="form-control form-control-lg bg-light border-0"
+                                [(ngModel)]="clase.video_url" name="video_url" placeholder="Ej: https://youtube.com/watch?...">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted small uppercase">Material de Apoyo (Opcional)</label>
+                            <input type="file" class="form-control form-control-lg bg-light border-0"
+                                (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png">
+                            <small class="text-muted smaller d-block mt-1">Carga guías PDF o infografías JPG de soporte</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small uppercase">Sitios Web de Referencia (Opcional - Uno o Varios)</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text bg-light border-0">🔗</span>
+                            <input type="url" class="form-control form-control-lg bg-light border-0 ps-0" [(ngModel)]="nuevoSitio" placeholder="Ej: www.wikipedia.org/wiki/..." (keydown.enter)="agregarSitio(); $event.preventDefault()">
+                            <button type="button" class="btn btn-secondary px-4 fw-bold" (click)="agregarSitio()">+ Añadir</button>
+                        </div>
+                        @if (sitiosReferencia.length > 0) {
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                @for (sitio of sitiosReferencia; track $index) {
+                                    <span class="badge bg-light text-dark border border-secondary-subtle rounded-pill py-2 px-3 d-flex align-items-center gap-2">
+                                        <span class="text-truncate" style="max-width: 350px;">{{ sitio }}</span>
+                                        <button type="button" class="btn-close" style="font-size: 0.65rem;" (click)="eliminarSitio($index)"></button>
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small uppercase">Resumen / Objetivos</label>
+                        <textarea class="form-control bg-light border-0" [(ngModel)]="clase.descripcion"
+                            name="descripcion" rows="4" placeholder="¿Qué aprenderemos hoy?"></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-naranja-teach btn-lg px-5" [disabled]="enviando || subiendoArchivo">
+                            {{ (enviando || subiendoArchivo) ? 'Guardando...' : 'Guardar Clase' }}
+                        </button>
+                        <button type="button" class="btn btn-light btn-lg px-4"
+                            routerLink="/docente/dashboard" [disabled]="enviando || subiendoArchivo">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear Curso Inline -->
+    @if (mostrarModalCurso()) {
+        <div class="modal-overlay d-flex align-items-center justify-content-center animate-fade-in" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.55); z-index: 1060; backdrop-filter: blur(4px);">
+            <div class="modal-content bg-white p-4 rounded-4 shadow-lg border-0 animate-scale-up" style="max-width: 500px; width: 90%;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0">📚 Crear Curso Completo</h4>
+                    <button type="button" class="btn-close" (click)="mostrarModalCurso.set(false)"></button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Título del Curso</label>
+                    <input type="text" class="form-control" [(ngModel)]="nuevoCurso.titulo" placeholder="Ej: Fundamentos de Fe I">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Descripción Corta</label>
+                    <textarea class="form-control" [(ngModel)]="nuevoCurso.descripcion" rows="3" placeholder="¿De qué trata este curso?"></textarea>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Icono (Emoji)</label>
+                        <input type="text" class="form-control text-center fs-4" [(ngModel)]="nuevoCurso.icono">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Tema de Color</label>
+                        <select class="form-select" [(ngModel)]="nuevoCurso.color_tema">
+                            <option value="primary">Azul</option>
+                            <option value="#198754">Verde</option>
+                            <option value="#dc3545">Rojo</option>
+                            <option value="#fd7e14">Naranja</option>
+                            <option value="#6f42c1">Púrpura</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">URL de Video o Página Web (Opcional)</label>
+                    <input type="url" class="form-control" [(ngModel)]="nuevoCurso.video_url" placeholder="https://youtube.com/watch?...">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Material de Apoyo del Curso (Opcional - PDF / JPG)</label>
+                    <input type="file" class="form-control" (change)="onFileSelectedCurso($event)" accept=".pdf,.jpg,.jpeg,.png">
+                    <small class="text-muted smaller">Carga guías generales, programas o silabarios</small>
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    <button class="btn btn-primary flex-fill rounded-pill py-2 fw-bold" (click)="crearCurso()" [disabled]="creandoCurso() || subiendoArchivoCurso">
+                        {{ (creandoCurso() || subiendoArchivoCurso) ? 'Guardando...' : 'Crear Curso' }}
+                    </button>
+                    <button class="btn btn-light flex-fill rounded-pill py-2" (click)="mostrarModalCurso.set(false)">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,60 @@
+<div class="explorar-wrapper">
+    <header class="header-section mb-5">
+        <h1 class="display-5 fw-bold text-marron">Explorar Cursos 🌟</h1>
+        <p class="lead text-muted">Encuentra tu próxima aventura de aprendizaje en nuestra escuela.</p>
+    </header>
+
+    @if (cargando()) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-orange" role="status"></div>
+            <p class="mt-2">Buscando las mejores lecciones para ti...</p>
+        </div>
+    } @else {
+        <div class="row g-4">
+            @for (curso of cursos(); track curso.id) {
+                <div class="col-md-6 col-lg-4">
+                    <div class="curso-card" [class]="'card-' + (curso.color_tema || 'naranja')">
+                        <div class="card-icon-banner">
+                            <span class="emoji-icon">{{ curso.icono || '📚' }}</span>
+                        </div>
+                        <div class="card-content p-4">
+                            <h3 class="h5 fw-bold mb-2">{{ curso.titulo }}</h3>
+                            <p class="small text-muted mb-4">{{ curso.descripcion || 'Sin descripción disponible.' }}</p>
+                            
+                            <div class="card-footer-action pt-3 border-top">
+                                @if (curso.yaInscrito) {
+                                    <button class="btn btn-secondary w-100 rounded-pill fw-bold" disabled>
+                                        Ya estás inscrito ✅
+                                    </button>
+                                } @else if (inscribiendoId() === curso.id) {
+                                    <button class="btn btn-secondary w-100 rounded-pill fw-bold" disabled>
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        Inscribiendo...
+                                    </button>
+                                } @else {
+                                    <button (click)="inscribir(curso)" class="btn btn-enroll w-100 rounded-pill fw-bold">
+                                        ¡Inscribirme ahora! 🚀
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } @empty {
+                <div class="col-12 text-center py-5">
+                    <div class="empty-state">
+                        <span class="display-1">🏜️</span>
+                        <h3 class="mt-3">No hay cursos disponibles en este momento.</h3>
+                        <p class="text-muted">Vuelve pronto para ver las nuevas clases.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="mt-5 text-center">
+        <a routerLink="/estudiante/dashboard" class="btn btn-link text-marron fw-bold text-decoration-none">
+            ← Regresar a mi Panel
+        </a>
+    </div>
+</div>

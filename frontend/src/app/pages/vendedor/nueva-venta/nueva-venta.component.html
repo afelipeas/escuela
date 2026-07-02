@@ -1,0 +1,162 @@
+<div class="nueva-venta-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 fw-bold mb-0">📝 Nueva Venta</h2>
+        <button class="btn btn-outline-secondary btn-sm" routerLink="/admin/ventas">← Volver a Gestión de Ventas</button>
+    </div>
+
+    @if (successMsg) {
+        <div class="toast-success">
+            <span>✅</span> {{ successMsg }}
+        </div>
+    }
+
+    @if (errorMsg) {
+        <div class="alert alert-danger d-flex align-items-center gap-2">
+            <span>❌</span> {{ errorMsg }}
+        </div>
+    }
+
+    <form (ngSubmit)="enviar()" #ventaForm="ngForm" class="row g-4">
+
+        <!-- DATOS DEL CLIENTE -->
+        <div class="col-12">
+            <div class="card-vendedor p-4 shadow-sm bg-white">
+                <h3 class="h6 fw-bold mb-3">👤 Datos del Cliente</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Cliente *</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="pedido.id_cliente" name="id_cliente" (change)="onClienteChange()" required>
+                            <option [value]="null">Seleccionar cliente</option>
+                            @for (c of clientes; track c.id) {
+                                <option [value]="c.id">{{ c.nombre }} {{ c.apellido || '' }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Nombre Envío *</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="pedido.nombre_envio" name="nombre_envio" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Email Envío</label>
+                        <input type="email" class="form-control form-control-sm" [(ngModel)]="pedido.email_envio" name="email_envio">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Dirección Envío *</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="pedido.direccion_envio" name="direccion_envio" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Ciudad Envío</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="pedido.ciudad_envio" name="ciudad_envio">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETALLE DE PRODUCTOS -->
+        <div class="col-12">
+            <div class="card-vendedor p-4 shadow-sm bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h6 fw-bold mb-0">📦 Productos</h3>
+                    <button type="button" class="btn btn-sm btn-outline-success" (click)="agregarLineaDetalle()">+ Agregar Producto</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm vendedor-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40%">Producto</th>
+                                <th style="width:15%">Cantidad</th>
+                                <th style="width:20%">Precio Unit.</th>
+                                <th style="width:15%">Subtotal</th>
+                                <th style="width:10%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (linea of pedido.detalle; track idx; let idx = $index) {
+                                <tr>
+                                    <td>
+                                        <select class="form-select form-select-sm" [(ngModel)]="linea.id_producto" [name]="'producto_' + idx" (change)="onProductoChange(idx)" required>
+                                            <option [value]="null">Seleccionar</option>
+                                            @for (p of productosDisponibles; track p.id) {
+                                                <option [value]="p.id">{{ p.nombre }} - ${{ p.precio | number }}</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm" [(ngModel)]="linea.cantidad" [name]="'cantidad_' + idx" min="1" (input)="recalcular()" required>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm" [(ngModel)]="linea.precio_unitario" [name]="'precio_' + idx" min="0" step="0.01" (input)="recalcular()" required>
+                                    </td>
+                                    <td class="fw-bold">${{ ((linea.cantidad || 0) * (linea.precio_unitario || 0)) | number }}</td>
+                                    <td>
+                                        @if (pedido.detalle.length > 1) {
+                                            <button type="button" class="btn btn-sm btn-outline-danger" (click)="eliminarLineaDetalle(idx)">✕</button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOTALES Y PAGO -->
+        <div class="col-12">
+            <div class="card-vendedor p-4 shadow-sm bg-white">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Subtotal</label>
+                        <div class="form-control form-control-sm bg-light fw-bold">${{ pedido.subtotal | number }}</div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold">Costo Envío</label>
+                        <div class="form-control form-control-sm bg-light fw-bold">${{ pedido.costo_envio | number }}</div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold">TOTAL *</label>
+                        <div class="form-control form-control-sm bg-success text-white fw-bold">${{ pedido.total | number }}</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Método de Pago *</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="pedido.metodo_pago" name="metodo_pago" required>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="tarjeta">Tarjeta</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold">Estado</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="pedido.estado" name="estado">
+                            <option value="pendiente">Pendiente</option>
+                            <option value="pagado">Pagado</option>
+                            <option value="en_camino">En Camino</option>
+                            <option value="entregado">Entregado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <label class="form-label small fw-semibold">Notas</label>
+                        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="pedido.notas" name="notas" placeholder="Notas opcionales del pedido..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="col-12 d-flex gap-3 justify-content-end">
+            <button type="button" class="btn btn-outline-marron" (click)="cancelar()">Cancelar</button>
+            <button type="submit" class="btn btn-naranja-v" [disabled]="loading">
+                @if (loading) {
+                    <span>Procesando...</span>
+                } @else {
+                    <span>💾 Guardar Venta</span>
+                }
+            </button>
+        </div>
+    </form>
+</div>
