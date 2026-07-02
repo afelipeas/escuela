@@ -3,11 +3,11 @@ node_modules/
 frontend/node_modules/
 backend/vendor/   # si usas composer
 
-# ==================== BUILD ====================
-dist/
-frontend/dist/
-build/
 
+# ==================== BUILD ====================
+#dist/
+#frontend/dist/
+build/
 # ==================== ARCHIVOS TEMPORALES ====================
 .env
 *.log
