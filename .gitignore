@@ -1,7 +1,7 @@
 # ==================== DEPENDENCIAS ====================
 node_modules/
 frontend/node_modules/
-backend/vendor/   # si usas composer
+#backend/vendor/   # si usas composer
 
 
 # ==================== BUILD ====================
@@ -22,12 +22,11 @@ debug*.php
 .angular/cache/
 .vscode/
 .idea/
-.DS_Store
-Thumbs.db
+
 
 # ==================== BASE DE DATOS ====================
-*.sql.bak
-*.bak
+#*.sql.bak
+#*.bak
 
 # ==================== DOCUMENTACIÓN (opcional) ====================
 *.md
