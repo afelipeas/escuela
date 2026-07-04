@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: escuela-dominical-api
+    runtime: php
+    rootDir: backend
+    buildCommand: ""
+    startCommand: "php -S 0.0.0.0:$PORT router.php"
+    envVars:
+      - key: APP_ENV
+        value: production

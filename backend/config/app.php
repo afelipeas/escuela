@@ -9,7 +9,7 @@
 
 // ── Entorno de Ejecución ──
 // 'development' (muestra errores en pantalla) o 'production' (oculta errores)
-define('APP_ENV', 'development');
+define('APP_ENV', getenv('APP_ENV') ?: 'development');
 
 // ── Configuración de Errores según Entorno ──
 if (APP_ENV === 'development') {
@@ -37,7 +37,7 @@ define('JWT_EXPIRATION', 3600 * 24); // 24 horas
 // ── Configuración de Base de Datos ──
 // En XAMPP local: host=localhost, user=root, pass=''
 // En infinityfree: reemplaza con los valores de tu panel → MySQL Databases
-define('DB_HOST', 'sql303.infinityfree.com');
-define('DB_NAME', 'if0_42322538_escuela_dominical_db');
-define('DB_USER', 'if0_42322538');
-define('DB_PASSWORD', '131174fj');
+define('DB_HOST', getenv('DB_HOST') ?: 'sql303.infinityfree.com');
+define('DB_NAME', getenv('DB_NAME') ?: 'if0_42322538_escuela_dominical_db');
+define('DB_USER', getenv('DB_USER') ?: 'if0_42322538');
+define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '131174fj');
