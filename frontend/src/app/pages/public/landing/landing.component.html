@@ -1,0 +1,474 @@
+<!-- =============================================
+     P01 — LANDING PAGE
+     Escuela Dominical Virtual para Niños
+     Bootstrap 5 + CSS Personalizado
+     ============================================= -->
+
+<!-- ===== BARRA DE NAVEGACIÓN ===== -->
+<nav class="barra-nav navbar navbar-expand-lg" [class.scrolleada]="barraScrolleada">
+    <div class="container">
+
+        <!-- Logo -->
+        <a class="navbar-brand nav-logo d-flex align-items-center gap-2" href="#inicio">
+            <div class="logo-circulo">✝</div>
+            <div class="logo-texto">
+                <span class="logo-nombre">Escuela Dominical</span>
+                <span class="logo-lema">Virtual para Niños</span>
+            </div>
+        </a>
+
+        <!-- Botón hamburguesa (móvil) -->
+        <button class="boton-hamburguesa navbar-toggler border-0" type="button" (click)="alternarMenu()"
+            [class.activo]="menuAbierto" aria-label="Abrir menú">
+            <span class="linea-hamburguesa"></span>
+            <span class="linea-hamburguesa"></span>
+            <span class="linea-hamburguesa"></span>
+        </button>
+
+        <!-- Menú principal -->
+        <div class="navbar-collapse" [class.show]="menuAbierto" [class.menu-abierto-panel]="menuAbierto">
+            <ul class="navbar-nav ms-auto align-items-center gap-2 nav-enlaces">
+                <li class="nav-item"><a href="#inicio" class="nav-link nav-enlace" (click)="cerrarMenu()">Inicio</a>
+                </li>
+                <li class="nav-item"><a href="#escuela" class="nav-link nav-enlace" (click)="cerrarMenu()">Escuela</a>
+                </li>
+                <li class="nav-item"><a href="#tienda" class="nav-link nav-enlace"
+                        (click)="cerrarMenu()">Tienda</a>
+                </li>
+                <li class="nav-item"><a href="#nosotros" class="nav-link nav-enlace" (click)="cerrarMenu()">Nosotros</a>
+                </li>
+                <li class="nav-item ms-lg-2">
+                    <a routerLink="/login" class="nav-boton-ingreso">Ingresar →</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<!-- ===== SECCIÓN HÉROE / PORTADA ===== -->
+<section class="seccion-hero" id="inicio">
+    <!-- Elementos decorativos de fondo -->
+    <div class="hero-decoracion" aria-hidden="true">
+        <div class="circulo-decorativo circulo-grande"></div>
+        <div class="circulo-decorativo circulo-mediano"></div>
+        <div class="circulo-decorativo circulo-pequeno"></div>
+        <div class="patron-puntos"></div>
+    </div>
+
+    <div class="container position-relative" style="z-index: 1;">
+        <div class="row align-items-center min-vh-100 py-5 mt-4">
+
+            <!-- Texto principal -->
+            <div class="col-lg-6 hero-texto animar-entrada">
+                <span class="hero-etiqueta">🎒 Aprendiendo con Fe y Alegría</span>
+                <h1 class="hero-titulo mt-3">
+                    Bienvenidos a la<br>
+                    <span class="hero-titulo-resaltado">Escuela Dominical</span><br>
+                    Virtual para Niños
+                </h1>
+                <p class="hero-descripcion mt-3">
+                    Una plataforma inspirada en valores cristianos donde los más pequeños
+                    acceden a clases virtuales, recursos educativos y artículos de fe
+                    desde cualquier lugar del mundo.
+                </p>
+                <div class="hero-acciones d-flex flex-wrap gap-3 mt-4">
+                    <a routerLink="/aula/dashboard" class="boton-primario boton-blanco">
+                        <span>📚</span> Ir a la Escuela
+                    </a>
+                    <a routerLink="/tienda/catalogo" class="boton-secundario boton-contorno-blanco">
+                        <span>🛒</span> Visitar Tienda
+                    </a>
+                </div>
+            </div>
+
+            <!-- Ilustración central -->
+            <div class="col-lg-6 d-none d-lg-flex justify-content-center hero-ilustracion animar-entrada">
+                <div class="tarjeta-flotante tarjeta-superior">
+                    <span class="tarjeta-icono">📖</span>
+                    <div>
+                        <strong>Clase del Domingo</strong>
+                        <p>Juan 3:16 — Amor de Dios</p>
+                    </div>
+                </div>
+
+                <div class="ilustracion-principal">
+                    <div class="ilustracion-circulo-exterior">
+                        <div class="ilustracion-circulo-interior">
+                            <span class="ilustracion-emoji">⛪</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tarjeta-flotante tarjeta-inferior">
+                    <span class="tarjeta-icono">🛍️</span>
+                    <div>
+                        <strong>Tienda Virtual</strong>
+                        <p>200+ productos disponibles</p>
+                    </div>
+                </div>
+
+                <div class="burbuja-alumno burbuja-1">
+                    <span>👧</span><span class="burbuja-texto">Sofía conectada</span>
+                </div>
+                <div class="burbuja-alumno burbuja-2">
+                    <span>👦</span><span class="burbuja-texto">Mateo en línea</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <div class="scroll-indicador" aria-hidden="true">
+        <div class="scroll-flecha"></div>
+    </div>
+</section>
+
+<!-- ===== SECCIÓN ESTADÍSTICAS ===== -->
+<section class="seccion-estadisticas py-5">
+    <div class="container">
+        <div class="row g-3 text-center">
+            @for (stat of estadisticas; track stat.etiqueta) {
+            <div class="col-6 col-md-3">
+                <div class="estadistica-item animar-entrada p-3">
+                    <div class="estadistica-numero-grupo d-flex align-items-end justify-content-center gap-1">
+                        <span class="contador-numero" [attr.data-objetivo]="stat.objetivo">0</span>
+                        <span class="estadistica-sufijo">{{ stat.sufijo }}</span>
+                    </div>
+                    <span class="estadistica-etiqueta d-block mt-1">{{ stat.etiqueta }}</span>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- ===== SECCIÓN BLOQUES PRINCIPALES ===== -->
+<section class="seccion-bloques py-5" id="nosotros">
+    <div class="container">
+
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-7 text-center seccion-encabezado animar-entrada">
+                <span class="encabezado-etiqueta">Todo en un solo lugar</span>
+                <h2 class="seccion-titulo mt-2">Educación y Comunidad<br>unidos por la Fe</h2>
+                <p class="seccion-descripcion mt-3">
+                    Combinamos una plataforma de aprendizaje bíblico con una tienda virtual
+                    de artículos cristianos, todo en un sistema seguro y fácil de usar.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+
+            <!-- Bloque Escuela Virtual -->
+            <div class="col-lg-6" id="escuela">
+                <div class="bloque-tarjeta bloque-escuela h-100 animar-entrada">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="bloque-icono-fondo bloque-icono-naranja">📚</div>
+                        <span class="bloque-insignia">Bloque Educativo</span>
+                    </div>
+                    <h3 class="bloque-titulo">Escuela Virtual</h3>
+                    <p class="bloque-descripcion mt-2">
+                        Accede a clases bíblicas, videos educativos y recursos diseñados
+                        especialmente para niños. Aprende con fe y alegría desde casa.
+                    </p>
+                    <ul class="bloque-lista mt-3 p-0">
+                        <li class="bloque-item"><span class="item-check">✅</span> Clases interactivas en video</li>
+                        <li class="bloque-item"><span class="item-check">✅</span> Materiales descargables</li>
+                        <li class="bloque-item"><span class="item-check">✅</span> Envío de tareas en línea</li>
+                        <li class="bloque-item"><span class="item-check">✅</span> Participación en comentarios</li>
+                    </ul>
+                    <div class="bloque-pie mt-4 d-flex flex-wrap align-items-center gap-3">
+                        <a routerLink="/aula/dashboard" class="boton-primario boton-naranja">Acceder a la Escuela →</a>
+                        <a routerLink="/estudiante/logros" class="text-marron small fw-bold text-decoration-none">Ver
+                            mis logros 🎖️</a>
+                        <span class="bloque-roles w-100 mt-1">Para: Estudiantes · Docentes</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloque Tienda Virtual -->
+            <div class="col-lg-6" id="tienda">
+                <div class="bloque-tarjeta bloque-tienda h-100 animar-entrada">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="bloque-icono-fondo bloque-icono-rojo">🛒</div>
+                        <span class="bloque-insignia bloque-insignia-rojo">Bloque Comercial</span>
+                    </div>
+                    <h3 class="bloque-titulo">Tienda Virtual</h3>
+                    <p class="bloque-descripcion mt-2">
+                        Encuentra artículos de fe, materiales educativos y productos
+                        especiales de la escuela. Compra segura con envío a domicilio.
+                    </p>
+                    <ul class="bloque-lista mt-3 p-0">
+                        <li class="bloque-item"><span class="item-check">✅</span> Catálogo variado de productos</li>
+                        <li class="bloque-item"><span class="item-check">✅</span> Pagos seguros (tarjeta o efectivo)
+                        </li>
+                        <li class="bloque-item"><span class="item-check">✅</span> Seguimiento de pedidos</li>
+                        <li class="bloque-item"><span class="item-check">✅</span> Devoluciones sin complicaciones</li>
+                    </ul>
+                    <div class="bloque-pie mt-4 d-flex flex-column gap-2">
+                        <a routerLink="/tienda/catalogo" class="boton-primario boton-rojo align-self-start">Visitar la
+                            Tienda
+                            →</a>
+                        <span class="bloque-roles">Para: Clientes · Vendedores</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===== SECCIÓN ¿POR QUÉ ELEGIRNOS? ===== -->
+<section class="seccion-caracteristicas py-5">
+    <div class="container">
+
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-7 text-center seccion-encabezado animar-entrada">
+                <span class="encabezado-etiqueta">¿Por qué elegirnos?</span>
+                <h2 class="seccion-titulo mt-2">Diseñado con Amor<br>para la Comunidad Cristiana</h2>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            @for (item of caracteristicas; track item.titulo) {
+            <div class="col-md-6 col-lg-4">
+                <div class="caracteristica-tarjeta text-center h-100 animar-entrada p-4">
+                    <div class="caracteristica-icono">{{ item.icono }}</div>
+                    <h4 class="caracteristica-titulo mt-3">{{ item.titulo }}</h4>
+                    <p class="caracteristica-descripcion mt-2 mb-0">{{ item.descripcion }}</p>
+                </div>
+            </div>
+            }
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== SECCIÓN CÓMO FUNCIONA ===== -->
+<section class="seccion-pasos py-5">
+    <div class="container">
+
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-6 text-center seccion-encabezado animar-entrada">
+                <span class="encabezado-etiqueta">¿Cómo Empezar?</span>
+                <h2 class="seccion-titulo mt-2">Solo 3 Pasos para Conectarte</h2>
+            </div>
+        </div>
+
+        <div class="row justify-content-center align-items-start g-3">
+
+            <div class="col-md-3">
+                <div class="paso-tarjeta text-center animar-entrada p-4 h-100">
+                    <div class="paso-numero">1</div>
+                    <div class="paso-icono mt-3">📝</div>
+                    <h4 class="paso-titulo mt-3">Crea tu Cuenta</h4>
+                    <p class="paso-descripcion mt-2 mb-0">
+                        Regístrate con tus datos básicos. El administrador
+                        asignará tu rol según tus necesidades.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-1 d-none d-md-flex justify-content-center align-items-center paso-flecha-col">
+                <div class="paso-flecha">→</div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="paso-tarjeta text-center animar-entrada p-4 h-100">
+                    <div class="paso-numero">2</div>
+                    <div class="paso-icono mt-3">🔐</div>
+                    <h4 class="paso-titulo mt-3">Inicia Sesión</h4>
+                    <p class="paso-descripcion mt-2 mb-0">
+                        Ingresa con tu usuario y contraseña. El sistema
+                        te redirigirá automáticamente a tu espacio.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-1 d-none d-md-flex justify-content-center align-items-center paso-flecha-col">
+                <div class="paso-flecha">→</div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="paso-tarjeta text-center animar-entrada p-4 h-100">
+                    <div class="paso-numero">3</div>
+                    <div class="paso-icono mt-3">🚀</div>
+                    <h4 class="paso-titulo mt-3">Explora y Aprende</h4>
+                    <p class="paso-descripcion mt-2 mb-0">
+                        Accede a tus clases, envía tareas o navega
+                        por la tienda virtual con total facilidad.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===== SECCIÓN ROLES DE USUARIO ===== -->
+<section class="seccion-roles py-5">
+    <div class="container">
+
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-6 text-center seccion-encabezado animar-entrada">
+                <span class="encabezado-etiqueta">Perfiles del Sistema</span>
+                <h2 class="seccion-titulo mt-2">Un Sistema para Cada Rol</h2>
+            </div>
+        </div>
+
+        <div class="row g-3 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="rol-tarjeta text-center animar-entrada p-3 h-100">
+                    <div class="rol-avatar">👤</div>
+                    <h5 class="rol-nombre mt-2">Administrador</h5>
+                    <p class="rol-descripcion mt-1 mb-0">Control total del sistema y gestión de cuentas.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="rol-tarjeta text-center animar-entrada p-3 h-100">
+                    <div class="rol-avatar">👨‍🏫</div>
+                    <h5 class="rol-nombre mt-2">Docente</h5>
+                    <p class="rol-descripcion mt-1 mb-0">Creación de clases y moderación de comentarios.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="rol-tarjeta text-center animar-entrada p-3 h-100">
+                    <div class="rol-avatar">🎒</div>
+                    <h5 class="rol-nombre mt-2">Estudiante</h5>
+                    <p class="rol-descripcion mt-1 mb-0">Accede a clases, recursos y envía tareas.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="rol-tarjeta text-center animar-entrada p-3 h-100">
+                    <div class="rol-avatar">🛍️</div>
+                    <h5 class="rol-nombre mt-2">Cliente</h5>
+                    <p class="rol-descripcion mt-1 mb-0">Compra productos con seguimiento de pedidos.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="rol-tarjeta text-center animar-entrada p-3 h-100">
+                    <div class="rol-avatar">💰</div>
+                    <h5 class="rol-nombre mt-2">Vendedor</h5>
+                    <p class="rol-descripcion mt-1 mb-0">Gestiona ventas, facturas y devoluciones.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="rol-tarjeta text-center animar-entrada p-3 h-100">
+                    <div class="rol-avatar">📦</div>
+                    <h5 class="rol-nombre mt-2">Jefe Almacén</h5>
+                    <p class="rol-descripcion mt-1 mb-0">Controla inventario, compras y proveedores.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== SECCIÓN LLAMADA A LA ACCIÓN FINAL ===== -->
+<section class="seccion-cta py-5">
+    <div class="cta-fondo-decorativo" aria-hidden="true">
+        <div class="cta-circulo cta-circulo-1"></div>
+        <div class="cta-circulo cta-circulo-2"></div>
+    </div>
+
+    <div class="container position-relative" style="z-index: 1;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center cta-contenido animar-entrada py-4">
+                <span class="cta-etiqueta">✝️ Únete a nuestra comunidad</span>
+                <h2 class="cta-titulo mt-3">¿Listo para Comenzar el Aprendizaje?</h2>
+                <p class="cta-descripcion mt-3">
+                    Cientos de niños ya aprenden con nosotros cada semana.
+                    ¡Sé parte de la familia de la Escuela Dominical Virtual!
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+                    <a routerLink="/login" class="boton-primario boton-blanco boton-grande">
+                        Ingresar al Sistema →
+                    </a>
+                    <a href="#nosotros" class="boton-secundario boton-contorno-blanco boton-grande">
+                        Conocer más
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PIE DE PÁGINA ===== -->
+<footer class="pie-pagina pt-5">
+    <div class="container">
+        <div class="row g-4 pb-5 pie-contenedor-borde">
+
+            <!-- Columna: Logo e información -->
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center gap-2 mb-3 nav-logo">
+                    <div class="logo-circulo">✝</div>
+                    <div class="logo-texto">
+                        <span class="logo-nombre logo-nombre-claro">Escuela Dominical</span>
+                        <span class="logo-lema logo-lema-claro">Virtual para Niños</span>
+                    </div>
+                </div>
+                <p class="pie-descripcion">
+                    Formando a los líderes del mañana con valores de fe, esperanza y amor.
+                    Una comunidad que crece junta en la Palabra de Dios.
+                </p>
+                <div class="d-flex gap-2 mt-3 pie-redes">
+                    <a href="#" class="red-icono" aria-label="Facebook">📘</a>
+                    <a href="#" class="red-icono" aria-label="Instagram">📷</a>
+                    <a href="#" class="red-icono" aria-label="YouTube">▶️</a>
+                    <a href="#" class="red-icono" aria-label="WhatsApp">💬</a>
+                </div>
+            </div>
+
+            <!-- Columna: Escuela -->
+            <div class="col-lg-2 col-md-6 col-6">
+                <h5 class="pie-titulo">Escuela</h5>
+                <ul class="pie-enlaces list-unstyled mt-3">
+                    <li><a href="#escuela">Plataforma de Aprendizaje</a></li>
+                    <li><a href="#">Clases Disponibles</a></li>
+                    <li><a href="#">Nuestros Docentes</a></li>
+                    <li><a href="#">Recursos Educativos</a></li>
+                    <li><a href="#">Envío de Tareas</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna: Tienda -->
+            <div class="col-lg-2 col-md-6 col-6">
+                <h5 class="pie-titulo">Tienda</h5>
+                <ul class="pie-enlaces list-unstyled mt-3">
+                    <li><a routerLink="/tienda/catalogo">Catálogo de Productos</a></li>
+                    <li><a href="#">Mis Pedidos</a></li>
+                    <li><a href="#">Métodos de Pago</a></li>
+                    <li><a href="#">Política de Devoluciones</a></li>
+                    <li><a href="#">Facturación</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna: Soporte -->
+            <div class="col-lg-2 col-md-6 col-6">
+                <h5 class="pie-titulo">Soporte</h5>
+                <ul class="pie-enlaces list-unstyled mt-3">
+                    <li><a href="#">Preguntas Frecuentes</a></li>
+                    <li><a href="#">Contáctanos</a></li>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="#">Soporte Técnico</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Barra inferior de derechos -->
+    <div class="pie-derechos">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 d-flex flex-wrap justify-content-between align-items-center py-3 gap-2">
+                    <p class="mb-0">© 2026 Escuela Dominical Virtual. Todos los derechos reservados.</p>
+                    <p class="mb-0">Desarrollado con ❤️ para la comunidad cristiana infantil</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

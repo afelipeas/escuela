@@ -1,0 +1,26 @@
+.bg-marron-docente {
+    background: linear-gradient(135deg, #78350F, #451A03);
+}
+
+.btn-naranja-teach {
+    background: var(--color-naranja-principal);
+    color: white;
+    font-weight: 700;
+}
+
+.btn-naranja-teach:hover {
+    background: var(--color-naranja-oscuro);
+    color: white;
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow: none;
+    background-color: #f8f9fa !important;
+    border: 1px solid var(--color-ambar-claro) !important;
+}
+
+.uppercase {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

@@ -1,0 +1,215 @@
+<div class="teacher-dashboard-content">
+    <div class="container-fluid">
+        <!-- KPI CARDS -->
+        <div class="row g-4 mb-4">
+            @for (kpi of resumen(); track kpi.titulo) {
+            <div class="col-sm-6 col-lg-3">
+                <div class="teach-kpi-card p-4 bg-white rounded-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="icon-box-teach" [class]="'bg-' + kpi.color">
+                            {{ kpi.icono }}
+                        </div>
+                    </div>
+                    <h3 class="h2 fw-bold mb-0">{{ kpi.valor }}</h3>
+                    <p class="text-muted small mb-0">{{ kpi.titulo }}</p>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="row g-4">
+            <!-- PRÓXIMAS CLASES -->
+            <div class="col-lg-8">
+                <div class="bg-white p-4 rounded-4 shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h5 fw-bold mb-0">📅 Próximas Clases</h2>
+                        <button routerLink="/docente/crear-clase" class="btn btn-naranja-teach btn-sm">Nueva Clase
+                            +</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="text-muted small">
+                                <tr>
+                                    <th>CURSO / GRUPO</th>
+                                    <th>FECHA Y HORA</th>
+                                    <th>ESTADO</th>
+                                    <th>ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (clase of proximasClases(); track $index) {
+                                <tr>
+                                    <td>
+                                        <p class="mb-0 fw-bold">{{ clase.curso || clase.titulo }}</p>
+                                        <small class="text-muted">{{ clase.grupo || 'General' }}</small>
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 small">{{ clase.fecha }}</p>
+                                        <small class="text-orange">{{ clase.hora }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill" [class.bg-success]="clase.estado === 'Listo' || clase.estado === 'en_curso'"
+                                            [class.bg-warning]="clase.estado === 'Preparando' || clase.estado === 'programada'">
+                                            {{ clase.estado }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-light-glass btn-sm text-dark border" (click)="abrirDetallesClase(clase)">📁</button>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTRO DE COMUNICACIÓN -->
+            <div class="col-lg-4">
+                <div class="bg-marron-docente p-4 rounded-4 shadow-sm h-100 text-white">
+                    <h2 class="h5 fw-bold mb-4">🔔 Centro de Notificaciones</h2>
+
+                    <div class="notification-form">
+                        <div class="mb-3">
+                            <label class="small mb-1 opacity-75">Seleccionar Curso</label>
+                            <select class="form-select bg-white-10 border-0 text-white" [(ngModel)]="notif.id_curso">
+                                @for (curso of misCursos(); track curso.id) {
+                                    <option [value]="curso.id">{{ curso.titulo }}</option>
+                                } @empty {
+                                    <option value="0" disabled>No tienes cursos asignados</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small mb-1 opacity-75">Título del Aviso</label>
+                            <input type="text" class="form-control bg-white-10 border-0 text-white placeholder-light" 
+                                [(ngModel)]="notif.titulo" placeholder="Ej: ¡Nueva Tarea!">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small mb-1 opacity-75">Categoría</label>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm flex-fill" [class.btn-light-glass]="notif.tipo === 'tarea'" 
+                                    [class.btn-white-outline]="notif.tipo !== 'tarea'" (click)="notif.tipo = 'tarea'">📝 Tarea</button>
+                                <button class="btn btn-sm flex-fill" [class.btn-light-glass]="notif.tipo === 'evento'" 
+                                    [class.btn-white-outline]="notif.tipo !== 'evento'" (click)="notif.tipo = 'evento'">📅 Evento</button>
+                                <button class="btn btn-sm flex-fill" [class.btn-light-glass]="notif.tipo === 'novedad'" 
+                                    [class.btn-white-outline]="notif.tipo !== 'novedad'" (click)="notif.tipo = 'novedad'">✨ Novedad</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small mb-1 opacity-75">Mensaje</label>
+                            <textarea class="form-control bg-white-10 border-0 text-white placeholder-light"
+                                [(ngModel)]="notif.mensaje" placeholder="Escribe el mensaje aquí..." rows="3"></textarea>
+                        </div>
+
+                        <button class="btn btn-naranja-teach w-100 py-2 fw-bold" (click)="enviarNotificacion()" [disabled]="enviando">
+                            {{ enviando ? 'Enviando...' : 'Enviar a Estudiantes 🚀' }}
+                        </button>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top border-white-10">
+                        <p class="small opacity-75 mb-0">💡 Los estudiantes verán este aviso en su campana de notificaciones al instante.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalles de la Clase Programada -->
+    @if (mostrarDetallesClase()) {
+        <div class="modal-overlay d-flex align-items-center justify-content-center">
+            <div class="modal-content bg-white p-4 rounded-4 shadow-lg border-0 animate-fade-in" style="max-width: 550px; width: 95%;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0">📅 Detalles de la Clase</h4>
+                    <button type="button" class="btn-close" (click)="mostrarDetallesClase.set(false)"></button>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="badge bg-warning text-dark mb-2">{{ claseSeleccionada()?.grupo || 'Grupo General' }}</div>
+                    <h5 class="fw-bold text-primary mb-1">{{ claseSeleccionada()?.titulo }}</h5>
+                    <p class="text-muted small mb-0">Curso: <span class="fw-bold">{{ claseSeleccionada()?.curso }}</span></p>
+                </div>
+
+                <div class="row g-3 mb-3 border-top border-bottom py-3 my-3">
+                    <div class="col-6">
+                        <div class="small text-muted">Fecha Programada</div>
+                        <div class="fw-bold">📅 {{ claseSeleccionada()?.fecha }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="small text-muted">Hora Programada</div>
+                        <div class="fw-bold text-orange">⏰ {{ claseSeleccionada()?.hora }}</div>
+                    </div>
+                </div>
+
+                @if (claseSeleccionada()?.descripcion) {
+                    <div class="mb-3">
+                        <label class="small fw-bold text-muted d-block mb-1">Descripción / Objetivos</label>
+                        <p class="small text-dark bg-light p-3 rounded-3 mb-0">{{ claseSeleccionada()?.descripcion }}</p>
+                    </div>
+                }
+
+                @if (claseSeleccionada()?.video_url) {
+                    <div class="mb-3">
+                        <label class="small fw-bold text-muted d-block mb-1">🎥 Enlace de Video</label>
+                        <a [href]="claseSeleccionada()?.video_url" target="_blank" class="small text-primary text-truncate d-block">{{ claseSeleccionada()?.video_url }}</a>
+                    </div>
+                }
+
+                @if (claseSeleccionada()?.referencias_url) {
+                    <div class="mb-3">
+                        <label class="small fw-bold text-muted d-block mb-1">🔗 Sitios Web de Referencia</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @for (ref of claseSeleccionada()?.referencias_url.split(','); track $index) {
+                                <a [href]="ref.trim()" target="_blank" class="badge bg-light text-dark border border-secondary-subtle py-1 px-3 text-decoration-none text-truncate" style="max-width: 150px;">
+                                    🌐 {{ ref.trim() }}
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="mb-4 mt-2">
+                    <label class="small fw-bold text-muted d-block mb-2">📁 Material de Apoyo de la Clase</label>
+                    
+                    @if (claseSeleccionada()?.material_url) {
+                        <div class="d-flex align-items-center justify-content-between bg-light p-3 rounded-4 border border-primary-subtle mb-3">
+                            <div class="d-flex align-items-center gap-2 text-truncate" style="max-width: 70%;">
+                                <span class="fs-4">📄</span>
+                                <div class="text-truncate">
+                                    <div class="fw-bold small text-truncate">{{ claseSeleccionada()?.material_nombre || 'material_apoyo' }}</div>
+                                    <div class="smaller text-muted">Material cargado correctamente</div>
+                                </div>
+                            </div>
+                            <a [href]="obtenerMaterialDescargaUrl(claseSeleccionada()?.material_url)" target="_blank" class="btn btn-primary btn-sm rounded-pill px-3">
+                                Descargar
+                            </a>
+                        </div>
+                    }
+
+                    <!-- Zona de Carga de Material -->
+                    <div class="upload-zone border-dashed rounded-4 p-3 text-center bg-light transition-hover" (click)="classFileInput.click()">
+                        <input type="file" #classFileInput class="d-none" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png">
+                        @if (archivoSeleccionado()) {
+                            <div class="text-primary fw-bold small mb-2">📎 {{ archivoSeleccionado()?.name }}</div>
+                            <button class="btn btn-naranja-teach btn-sm rounded-pill px-4 py-1" (click)="subirMaterialClase(); $event.stopPropagation()" [disabled]="subiendoArchivo()">
+                                {{ subiendoArchivo() ? 'Subiendo...' : 'Confirmar Carga' }}
+                            </button>
+                        } @else {
+                            <div class="smaller text-muted fw-bold">
+                                {{ claseSeleccionada()?.material_url ? '🔄 Reemplazar o subir nuevo material' : '📁 Subir material para esta clase (PDF, JPG, PNG)' }}
+                            </div>
+                            <div class="smaller text-muted mt-1">Haz clic aquí para seleccionar archivo (Máx. 10MB)</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex">
+                    <button class="btn btn-secondary w-100 rounded-pill py-2" (click)="mostrarDetallesClase.set(false)">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

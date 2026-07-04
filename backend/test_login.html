@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Login</title></head>
+<body>
+<h2>Test Login Backend</h2>
+<input type="text" id="email" placeholder="Email" value="admin@escuela.com"><br><br>
+<input type="password" id="pass" placeholder="Password" value="password"><br><br>
+<button onclick="probar()">Probar Login</button>
+<pre id="resultado"></pre>
+<script>
+async function probar() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('pass').value;
+    document.getElementById('resultado').textContent = 'Enviando...';
+    try {
+        const res = await fetch('https://escueladominical.infinityfree.io/backend/api/testlogin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass })
+        });
+        const data = await res.json();
+        document.getElementById('resultado').textContent = JSON.stringify(data, null, 2);
+    } catch(e) {
+        document.getElementById('resultado').textContent = 'Error: ' + e.message;
+    }
+}
+</script>
+</body>
+</html>

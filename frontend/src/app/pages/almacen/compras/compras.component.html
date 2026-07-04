@@ -1,0 +1,434 @@
+<div class="reportes-compras-container">
+    <!-- ENCABEZADO UNIFICADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0 text-marron">Reporte de Compras y Adquisiciones</h1>
+            <p class="text-muted small mb-0">Gestión de suministros, órdenes de compra y proveedores</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button (click)="exportarCompras('PDF')" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">
+                Exportar PDF 📄
+            </button>
+            <button (click)="exportarCompras('EXCEL')" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold">
+                Excel Dinámico 📊
+            </button>
+            <button (click)="nuevaOrden()" class="btn btn-naranja btn-sm rounded-pill px-4 fw-bold">
+                Nueva Orden ➕
+            </button>
+        </div>
+    </div>
+
+    <!-- FILTRO DE FECHAS -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-muted">Fecha Inicio</label>
+                <input type="date" class="form-control form-control-sm rounded-pill border-light bg-light px-3"
+                    [(ngModel)]="fechaInicio">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-muted">Fecha Fin</label>
+                <input type="date" class="form-control form-control-sm rounded-pill border-light bg-light px-3"
+                    [(ngModel)]="fechaFin">
+            </div>
+            <div class="col-md-4">
+                <button (click)="cargarReporte()" class="btn btn-marron w-100 rounded-pill fw-bold btn-sm" [disabled]="cargando()">
+                    {{ cargando() ? 'Consultando...' : 'Filtrar 🔍' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4 px-lg-5">
+
+        <!-- RESUMEN FINANCIERO DE COMPRAS -->
+        <div class="row g-4 mb-5">
+            @for (m of metricasCompras(); track m.titulo) {
+            <div class="col-md-6 col-xl-3">
+                <div class="kpi-compras-card p-4 rounded-4 shadow-sm border-0 bg-white d-flex align-items-center gap-3">
+                    <div class="kpi-compras-icon" [class]="m.color">{{ m.icono }}</div>
+                    <div>
+                        <p class="smaller text-muted text-uppercase fw-bold mb-0">{{ m.titulo }}</p>
+                        <h2 class="h4 fw-bold mb-0 text-marron">{{ m.valor }}</h2>
+                        <span class="smaller opacity-75">{{ m.sub }}</span>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="row g-4">
+
+            <!-- LISTADO DE ÓRDENES -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h6 fw-bold m-0 d-flex align-items-center gap-2">
+                            📦 Historial de Órdenes de Compra
+                        </h2>
+                        <span class="small text-muted">{{ ordenesCompra().length }} órdenes</span>
+                    </div>
+
+                    @if (cargando()) {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-marron" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                    } @else {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle compras-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Orden</th>
+                                    <th>Proveedor</th>
+                                    <th>Responsable</th>
+                                    <th>Fecha</th>
+                                    <th class="text-end">Monto Total</th>
+                                    <th class="text-end">Estado</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (orden of ordenesCompra(); track orden.id) {
+                                <tr style="cursor:pointer;" (click)="abrirDetalleOrden(orden)">
+                                    <td><span class="fw-bold text-primary small">{{ orden.codigo }}</span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="prov-avatar">🏢</div>
+                                            <span class="small fw-medium">{{ orden.proveedor_nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="small text-muted">{{ orden.responsable_nombre }}</span></td>
+                                    <td><span class="smaller text-muted">{{ formatearFecha(orden.fecha_orden) }}</span></td>
+                                    <td class="text-end"><span class="fw-bold text-marron">${{ orden.total | number:'.0-0' }}</span></td>
+                                    <td class="text-end">
+                                        <span class="badge-status-c" [class]="getEstadoClase(orden.estado)">
+                                            {{ getEstadoTexto(orden.estado) }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-2" title="Ver / Editar" (click)="$event.stopPropagation(); abrirDetalleOrden(orden)">👁️</button>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+
+                    @if (!cargando() && ordenesCompra().length === 0) {
+                    <div class="text-center py-4 text-muted">
+                        <p>No hay órdenes de compra para el rango de fechas seleccionado.</p>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ANÁLISIS DE GASTO POR CATEGORÍA -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+                    <h2 class="h6 fw-bold mb-4">📈 Distribución del Gasto</h2>
+                    @if (distribucionGasto().length > 0) {
+                    <div class="spending-list">
+                        @for (item of distribucionGasto(); track item.nombre) {
+                        <div class="spend-item mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="smaller fw-bold">{{ item.nombre }}</span>
+                                <span class="smaller text-muted">{{ item.monto }}</span>
+                            </div>
+                            <div class="bar-progress-c">
+                                <div class="bar-fill-c" [class]="item.color" [style.width]="item.porcentaje + '%'"></div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    } @else {
+                    <p class="text-muted small">Sin datos para mostrar</p>
+                    }
+                </div>
+
+                <div class="supplier-alert p-4 rounded-4 bg-soft-azul border-start border-4 border-primary">
+                    <h3 class="h6 fw-bold mb-2">💡 Sugerencia de Compra</h3>
+                    <p class="smaller mb-0 opacity-75">
+                        Basado en el ritmo de compras, revisa el reporte para identificar oportunidades de optimización de gasto por categoría.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL NUEVA ORDEN DE COMPRA -->
+    @if (mostrarModal) {
+    <div class="modal-overlay-c">
+        <div class="modal-card-c shadow-lg animation-slide-c">
+            <div class="modal-header-c p-4 border-bottom d-flex justify-content-between align-items-center">
+                <h2 class="h5 fw-bold mb-0">Nueva Orden de Compra</h2>
+                <button (click)="cerrarModal()" class="btn-close-c">&times;</button>
+            </div>
+            <div class="modal-body-c p-4">
+                <form (ngSubmit)="guardarOrden()">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Proveedor</label>
+                            <select class="form-select bg-light border-0" [(ngModel)]="formData.id_proveedor" name="id_proveedor" required>
+                                <option value="">Seleccione un proveedor</option>
+                                @for (p of proveedores; track p.id) {
+                                <option [value]="p.id">{{ p.nombre }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Fecha Estimada de Recepción</label>
+                            <input type="date" class="form-control bg-light border-0" [(ngModel)]="formData.fecha_estimada" name="fecha_estimada">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Notas</label>
+                            <textarea class="form-control bg-light border-0" rows="2" [(ngModel)]="formData.notas" name="notas" placeholder="Comentarios adicionales..."></textarea>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">Detalle de Productos</h6>
+
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm align-middle detalle-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center" style="width:100px;">Cantidad</th>
+                                    <th class="text-end" style="width:130px;">Precio Costo</th>
+                                    <th class="text-end" style="width:120px;">Subtotal</th>
+                                    <th class="text-center" style="width:40px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of detalle; track $index; let i = $index) {
+                                <tr>
+                                    <td>
+                                        <select class="form-select form-select-sm bg-light border-0" [(ngModel)]="item.id_producto" [name]="'prod_'+i" required (change)="onProductoChange(i)">
+                                            <option value="">Seleccionar</option>
+                                            @for (prod of productos; track prod.id) {
+                                            <option [value]="prod.id">{{ prod.nombre }}</option>
+                                            }
+                                            <option value="nuevo" class="text-primary fw-bold">+ Crear nuevo producto</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm bg-light border-0 text-center" [(ngModel)]="item.cantidad" [name]="'cant_'+i" min="1" required (input)="calcularSubtotal(i)">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm bg-light border-0 text-end" [(ngModel)]="item.precio_costo" [name]="'costo_'+i" min="0" step="0.01" required (input)="calcularSubtotal(i)">
+                                    </td>
+                                    <td class="text-end fw-bold text-marron">${{ (item.cantidad * item.precio_costo) | number:'1.0-0' }}</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn p-0 text-danger" (click)="eliminarDetalle(i)" title="Eliminar">&times;</button>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-bold">
+                                    <td colspan="3" class="text-end text-marron">TOTAL</td>
+                                    <td class="text-end text-marron">${{ calcularTotal() | number:'1.0-0' }}</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill mb-4" (click)="agregarDetalle()">
+                        + Agregar Producto
+                    </button>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-naranja w-100 fw-bold" [disabled]="!formValid() || guardando">
+                            {{ guardando ? 'Guardando...' : 'Crear Orden de Compra' }}
+                        </button>
+                        <button type="button" (click)="cerrarModal()" class="btn btn-light w-100 fw-bold">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- MODAL CREAR NUEVO PRODUCTO -->
+    @if (mostrarModalProducto) {
+    <div class="modal-overlay-c">
+        <div class="modal-card-c shadow-lg animation-slide-c" style="max-width:500px;">
+            <div class="modal-header-c p-4 border-bottom d-flex justify-content-between align-items-center">
+                <h2 class="h5 fw-bold mb-0">Crear Nuevo Producto</h2>
+                <button (click)="cerrarModalProducto()" class="btn-close-c">&times;</button>
+            </div>
+            <div class="modal-body-c p-4">
+                <form (ngSubmit)="guardarProducto()">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Nombre del Producto</label>
+                        <input type="text" class="form-control bg-light border-0" [(ngModel)]="nuevoProducto.nombre" name="np_nombre" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Precio Venta</label>
+                            <input type="number" class="form-control bg-light border-0" [(ngModel)]="nuevoProducto.precio" name="np_precio" min="0" step="0.01">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Precio Costo</label>
+                            <input type="number" class="form-control bg-light border-0" [(ngModel)]="nuevoProducto.precio_costo" name="np_costo" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Categoría</label>
+                        <select class="form-select bg-light border-0" [(ngModel)]="nuevoProducto.categoria" name="np_categoria">
+                            <option value="">Seleccionar</option>
+                            <option value="Libros y Biblias">Libros y Biblias</option>
+                            <option value="Manualidades">Manualidades</option>
+                            <option value="Instrumentos">Instrumentos</option>
+                            <option value="Ropa y Accesorios">Ropa y Accesorios</option>
+                            <option value="Oficina">Oficina</option>
+                            <option value="Decoración">Decoración</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Stock Actual</label>
+                            <input type="number" class="form-control bg-light border-0" [(ngModel)]="nuevoProducto.stock_actual" name="np_stock" min="0">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Stock Mínimo</label>
+                            <input type="number" class="form-control bg-light border-0" [(ngModel)]="nuevoProducto.stock_minimo" name="np_min" min="0">
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-naranja w-100 fw-bold">Guardar Producto</button>
+                        <button type="button" (click)="cerrarModalProducto()" class="btn btn-light w-100 fw-bold">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- MODAL DETALLE / EDITAR / ELIMINAR ORDEN -->
+    @if (mostrarModalDetalle && ordenActual) {
+    <div class="modal-overlay-c">
+        <div class="modal-card-c shadow-lg animation-slide-c" style="max-width:650px;">
+            <div class="modal-header-c p-4 border-bottom d-flex justify-content-between align-items-center">
+                <h2 class="h5 fw-bold mb-0">
+                    {{ editando ? 'Editar Orden' : 'Detalle de Orden' }}
+                    <span class="ms-2 badge-status-c" [class]="getEstadoClase(ordenActual.estado)">{{ getEstadoTexto(ordenActual.estado) }}</span>
+                </h2>
+                <button (click)="cerrarModalDetalle()" class="btn-close-c">&times;</button>
+            </div>
+            <div class="modal-body-c p-4">
+                <form (ngSubmit)="guardarEdicionOrden()">
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Código</label>
+                            <input type="text" class="form-control bg-light border-0" [value]="ordenActual.codigo" disabled>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Responsable</label>
+                            <input type="text" class="form-control bg-light border-0" [value]="ordenActual.responsable_nombre" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Proveedor</label>
+                            @if (editando) {
+                            <select class="form-select bg-light border-0" [(ngModel)]="ordenEditForm.id_proveedor" name="edit_proveedor" required>
+                                @for (p of proveedores; track p.id) {
+                                <option [value]="p.id">{{ p.nombre }}</option>
+                                }
+                            </select>
+                            } @else {
+                            <input type="text" class="form-control bg-light border-0" [value]="ordenActual.proveedor_nombre" disabled>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Fecha de Orden</label>
+                            <input type="text" class="form-control bg-light border-0" [value]="formatearFecha(ordenActual.fecha_orden)" disabled>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Total</label>
+                            @if (editando) {
+                            <input type="number" class="form-control bg-light border-0" [(ngModel)]="ordenEditForm.total" name="edit_total" min="0" step="0.01" required>
+                            } @else {
+                            <input type="text" class="form-control bg-light border-0" [value]="'$' + (ordenActual.total | number:'1.0-0')" disabled>
+                            }
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Estado</label>
+                            @if (editando) {
+                            <select class="form-select bg-light border-0" [(ngModel)]="ordenEditForm.estado" name="edit_estado" required>
+                                @for (est of estadosDisponibles; track est) {
+                                <option [value]="est">{{ getEstadoTexto(est) }}</option>
+                                }
+                            </select>
+                            } @else {
+                            <input type="text" class="form-control bg-light border-0" [value]="getEstadoTexto(ordenActual.estado)" disabled>
+                            }
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Fecha Estimada</label>
+                            @if (editando) {
+                            <input type="date" class="form-control bg-light border-0" [(ngModel)]="ordenEditForm.fecha_estimada" name="edit_fecha_est">
+                            } @else {
+                            <input type="text" class="form-control bg-light border-0" [value]="ordenActual.fecha_estimada ? formatearFecha(ordenActual.fecha_estimada) : 'No definida'" disabled>
+                            }
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Notas</label>
+                            @if (editando) {
+                            <textarea class="form-control bg-light border-0" rows="2" [(ngModel)]="ordenEditForm.notas" name="edit_notas"></textarea>
+                            } @else {
+                            <textarea class="form-control bg-light border-0" rows="2" [value]="ordenActual.notas || 'Sin notas'" disabled></textarea>
+                            }
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">Productos de la Orden</h6>
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm align-middle detalle-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Costo</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (d of detalleActual; track $index) {
+                                <tr>
+                                    <td><span class="small">{{ d.producto_nombre }}</span></td>
+                                    <td class="text-center"><span class="small">{{ d.cantidad }}</span></td>
+                                    <td class="text-end"><span class="small">${{ d.precio_costo | number:'1.0-0' }}</span></td>
+                                    <td class="text-end"><span class="small fw-bold">${{ (d.cantidad * d.precio_costo) | number:'1.0-0' }}</span></td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        @if (editando) {
+                        <button type="submit" class="btn btn-naranja w-100 fw-bold" [disabled]="guardandoEdicion">
+                            {{ guardandoEdicion ? 'Guardando...' : 'Guardar Cambios' }}
+                        </button>
+                        <button type="button" class="btn btn-outline-danger w-100 fw-bold" (click)="eliminarOrden(ordenActual.id)">
+                            Eliminar Orden
+                        </button>
+                        } @else {
+                        <button type="button" class="btn btn-naranja w-100 fw-bold" (click)="toggleEditarOrden()">
+                            Editar Orden ✏️
+                        </button>
+                        }
+                        <button type="button" (click)="cerrarModalDetalle()" class="btn btn-light w-100 fw-bold">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>

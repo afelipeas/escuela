@@ -1,0 +1,101 @@
+.explorar-wrapper {
+    padding: 2rem 0;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.text-marron {
+    color: var(--color-marron-oscuro);
+}
+
+.text-orange {
+    color: var(--color-naranja-principal);
+}
+
+/* CURSO CARDS */
+.curso-card {
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #F1F5F9;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.curso-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border-color: var(--color-naranja-principal);
+}
+
+.card-icon-banner {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-icon-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0.15;
+}
+
+.emoji-icon {
+    font-size: 4rem;
+    z-index: 1;
+    transition: transform 0.3s;
+}
+
+.curso-card:hover .emoji-icon {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* TEMAS DE COLOR */
+.card-naranja .card-icon-banner { background: #FFF7ED; }
+.card-naranja .card-icon-banner::before { background: linear-gradient(135deg, #F97316, #FB923C); }
+
+.card-azul .card-icon-banner { background: #F0F9FF; }
+.card-azul .card-icon-banner::before { background: linear-gradient(135deg, #0EA5E9, #38BDF8); }
+
+.card-verde .card-icon-banner { background: #F0FDF4; }
+.card-verde .card-icon-banner::before { background: linear-gradient(135deg, #10B981, #34D399); }
+
+.card-purpura .card-icon-banner { background: #F5F3FF; }
+.card-purpura .card-icon-banner::before { background: linear-gradient(135deg, #8B5CF6, #A78BFA); }
+
+/* BOTÓN DE INSCRIPCIÓN */
+.btn-enroll {
+    background: var(--color-naranja-principal);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(249, 115, 22, 0.2);
+}
+
+.btn-enroll:hover {
+    background: var(--color-marron-oscuro);
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.empty-state span {
+    display: block;
+    animation: floating 3s infinite ease-in-out;
+}
+
+@keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}

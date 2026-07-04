@@ -1,0 +1,319 @@
+/* ================================================================
+   ESTUDIANTE DASHBOARD — Estilos lúdicos y alegres
+   Enfoque infantil y amigable
+   ================================================================ */
+
+/* ===== BIENVENIDA ===== */
+.welcome-section {
+    background: linear-gradient(135deg, #F97316, #FB923C);
+    border-radius: var(--radio-lg);
+    color: white;
+    box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-title {
+    font-family: var(--fuente-titulos);
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.welcome-subtitle {
+    opacity: 0.9;
+    margin: 0;
+}
+
+.rank-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.welcome-illustration {
+    font-size: 5rem;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ===== CLASES CARDS ===== */
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-marron-oscuro);
+    margin: 0;
+}
+
+.btn-link-all {
+    color: var(--color-naranja-principal);
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: none;
+    border: none;
+}
+
+.clase-card {
+    background: white;
+    border-radius: var(--radio-lg);
+    padding: 1.5rem;
+    border: 2px solid #F3F4F6;
+    transition: var(--transicion);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.clase-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+.clase-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.clase-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.card-naranja .clase-icon {
+    background: #FFF7ED;
+}
+
+.card-ambar .clase-icon {
+    background: #FEFCE8;
+}
+
+.card-rojo .clase-icon {
+    background: #FEF2F2;
+}
+
+.clase-info h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--color-marron-oscuro);
+}
+
+.clase-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-texto-claro);
+}
+
+.current-lesson {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-texto-suave);
+    margin: 0;
+}
+
+.progress-bar-wrap {
+    height: 8px;
+    background: #F3F4F6;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s ease-out;
+}
+
+.card-naranja .progress-fill {
+    background: var(--color-naranja-principal);
+}
+
+.card-ambar .progress-fill {
+    background: var(--color-ambar);
+}
+
+.card-rojo .progress-fill {
+    background: var(--color-rojo-calido);
+}
+
+.card-azul .progress-fill {
+    background: #3B82F6;
+}
+
+.card-verde .progress-fill {
+    background: #10B981;
+}
+
+.card-purpura .progress-fill {
+    background: #8B5CF6;
+}
+
+/* Fallback color if none matches */
+.progress-fill {
+    background: var(--color-naranja-principal);
+}
+
+.card-azul .clase-icon { background: #EFF6FF; }
+.card-verde .clase-icon { background: #ECFDF5; }
+.card-purpura .clase-icon { background: #F5F3FF; }
+
+.progress-text {
+    font-size: 0.75rem;
+    color: var(--color-texto-claro);
+    font-weight: 600;
+}
+
+.btn-continue {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--radio-pill);
+    background: #F3F4F6;
+    color: var(--color-marron-oscuro);
+    font-weight: 800;
+    font-size: 0.9rem;
+    border: none;
+    transition: var(--transicion);
+}
+
+.clase-card:hover .btn-continue {
+    background: var(--color-naranja-principal);
+    color: white;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+/* ===== PANEL LATERAL ===== */
+.data-group-card {
+    background: white;
+    border-radius: var(--radio-lg);
+    padding: 1.5rem;
+    border: 1px solid #EEE;
+}
+
+.logro-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed #EEE;
+}
+
+.logro-info h4 {
+    font-size: 0.9rem;
+    margin: 0;
+    color: var(--color-marron-oscuro);
+}
+
+.logro-info p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-texto-claro);
+}
+
+.event-card {
+    background: linear-gradient(135deg, #78350F, #92400E);
+    border-radius: var(--radio-lg);
+    color: white;
+}
+
+.event-type {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--color-ambar-claro);
+}
+
+.event-label {
+    float: right;
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+
+.event-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-family: var(--fuente-titulos);
+}
+
+.event-date,
+.event-time {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.btn-reminder {
+    background: var(--color-ambar);
+    color: var(--color-marron-oscuro);
+    border-radius: var(--radio-pill);
+    font-weight: 800;
+    padding: 0.6rem;
+    border: none;
+    transition: var(--transicion);
+}
+
+.btn-reminder:hover {
+    transform: scale(1.03);
+    background: white;
+}
+
+.btn-enroll {
+    background: var(--color-naranja-principal);
+    color: white;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-enroll:hover {
+    background: var(--color-marron-oscuro);
+    color: white;
+    transform: scale(1.05);
+}
+
+.empty-dashboard-card {
+    border: 3px dashed #EEE;
+    background: #FAFAFA;
+}
+
+/* ===== MENSAJES DEL PROFESOR (Consolidados) ===== */
+.bg-crema-naranja {
+    background-color: #FFF7ED;
+    border: 1px solid #FFEDD5;
+}
+
+.card-mensaje {
+    transition: transform 0.2s;
+    border-radius: 15px;
+}
+
+.card-mensaje:hover {
+    transform: scale(1.02);
+}
+
+.smaller {
+    font-size: 0.75rem;
+}
+
+.text-marron {
+    color: var(--color-marron-oscuro);
+}

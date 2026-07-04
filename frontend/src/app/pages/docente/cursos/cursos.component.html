@@ -1,0 +1,100 @@
+<div class="cursos-gestor p-4">
+    <header class="mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">📚 Gestor de Contenido</h1>
+            <p class="text-muted small mb-0">Administra tus cursos, lecciones y materiales de apoyo.</p>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4 shadow-sm" (click)="mostrarModal.set(true)">
+            <span class="me-2">+</span> Crear Nuevo Curso
+        </button>
+    </header>
+
+    @if (cargando()) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Cargando tus cursos...</p>
+        </div>
+    } @else {
+        <div class="row g-4">
+            @for (curso of cursos(); track curso.id) {
+                <div class="col-md-6 col-lg-4">
+                    <div class="course-card bg-white rounded-4 shadow-sm overflow-hidden h-100 border-0 transition-hover">
+                        <div class="card-header-accent" [style.background-color]="getColorCss(curso.color_tema)"></div>
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="course-icon fs-2">{{ curso.icono || '📚' }}</div>
+                                <span class="badge rounded-pill" [class]="curso.estado === 'activo' ? 'bg-success' : 'bg-warning'">
+                                    {{ curso.estado | titlecase }}
+                                </span>
+                            </div>
+                            <h5 class="fw-bold mb-2">{{ curso.titulo }}</h5>
+                            <p class="text-muted small mb-4 text-truncate-2">{{ curso.descripcion || 'Sin descripción disponible.' }}</p>
+                            
+                            <div class="d-flex gap-2">
+                                <a [routerLink]="['/docente/cursos', curso.id, 'lecciones']" class="btn btn-outline-primary flex-fill rounded-pill py-2 small fw-bold">
+                                    ⚙️ Gestionar Lecciones
+                                </a>
+                                <button class="btn btn-light rounded-circle p-2">✏️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } @empty {
+                <div class="col-12 text-center py-5 bg-white rounded-4 shadow-sm">
+                    <div class="fs-1 mb-3">📭</div>
+                    <h4 class="fw-bold">No tienes cursos creados aún</h4>
+                    <p class="text-muted">¡Comienza creando tu primer curso para compartir tus conocimientos!</p>
+                    <button class="btn btn-primary mt-3 rounded-pill px-4" (click)="mostrarModal.set(true)">Crear mi primer curso</button>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Modal Crear Curso -->
+    @if (mostrarModal()) {
+        <div class="modal-overlay d-flex align-items-center justify-content-center">
+            <div class="modal-content bg-white p-4 rounded-4 shadow-lg border-0 animate-fade-in" style="max-width: 500px; width: 90%;">
+                <h4 class="fw-bold mb-3">✨ Nuevo Curso</h4>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Título del Curso</label>
+                    <input type="text" class="form-control" [(ngModel)]="nuevoCurso.titulo" placeholder="Ej: Fundamentos Bíblicos I">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Descripción Corta</label>
+                    <textarea class="form-control" [(ngModel)]="nuevoCurso.descripcion" rows="3" placeholder="¿De qué trata este curso?"></textarea>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Icono (Emoji)</label>
+                        <input type="text" class="form-control text-center fs-4" [(ngModel)]="nuevoCurso.icono">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Color</label>
+                        <select class="form-select" [(ngModel)]="nuevoCurso.color_tema">
+                            <option value="primary">Azul</option>
+                            <option value="#198754">Verde</option>
+                            <option value="#dc3545">Rojo</option>
+                            <option value="#fd7e14">Naranja</option>
+                            <option value="#6f42c1">Púrpura</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">URL de Video o Página Web (Opcional)</label>
+                    <input type="url" class="form-control" [(ngModel)]="nuevoCurso.video_url" placeholder="https://youtube.com/watch?...">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Material de Apoyo del Curso (Opcional - PDF / JPG)</label>
+                    <input type="file" class="form-control" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png">
+                    <small class="text-muted smaller">Carga guías generales, programas o silabarios</small>
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    <button class="btn btn-primary flex-fill rounded-pill py-2 fw-bold" (click)="crearCurso()" [disabled]="enviando() || subiendoArchivo()">
+                        {{ (enviando() || subiendoArchivo()) ? 'Guardando...' : 'Crear Curso' }}
+                    </button>
+                    <button class="btn btn-light flex-fill rounded-pill py-2" (click)="mostrarModal.set(false)">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

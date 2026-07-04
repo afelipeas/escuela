@@ -1,0 +1,58 @@
+.bg-light-gray {
+    background-color: #f8f9fa;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.smaller {
+    font-size: 0.75rem;
+}
+
+.badge-sobresaliente {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: #ffffff;
+    border: none;
+}
+
+.badge-notable {
+    background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+    color: #ffffff;
+    border: none;
+}
+
+.badge-aprobado {
+    background: linear-gradient(135deg, #0dcaf0, #31d2f2);
+    color: #212529;
+    border: none;
+}
+
+.badge-progreso {
+    background: linear-gradient(135deg, #ffc107, #ffca2c);
+    color: #212529;
+    border: none;
+}
+
+.avatar {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-responsive {
+    border-radius: 12px;
+}
+
+.table th {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.03) !important;
+}

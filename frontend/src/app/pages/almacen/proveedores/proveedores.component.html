@@ -1,0 +1,121 @@
+<div class="proveedores-container animation-fade">
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0 text-marron">Directorio de Proveedores 🤝</h1>
+            <p class="text-muted small mb-0">Gestiona tus aliados estratégicos y suministros</p>
+        </div>
+        <button (click)="abrirModal()" class="btn btn-naranja-a fw-bold px-4 rounded-pill shadow-sm">
+            Nuevo Proveedor ➕
+        </button>
+    </div>
+
+    <!-- TABLA DE PROVEEDORES -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">PROVEEDOR</th>
+                        <th>CONTACTO</th>
+                        <th>CATEGORIA</th>
+                        <th>ESTADO</th>
+                        <th class="text-end pe-4">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (p of proveedores(); track p.id) {
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-prov">{{ p.nombre[0] }}</div>
+                                <div>
+                                    <p class="mb-0 fw-bold text-marron">{{ p.nombre }}</p>
+                                    <small class="text-muted">{{ p.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <p class="mb-0 small fw-medium">{{ p.contacto }}</p>
+                            <small class="text-muted">{{ p.telefono }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark fw-normal rounded-pill px-3">
+                                {{ p.categoria }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-indicator" [class.active]="p.estado === 'Activo'"
+                                (click)="toggleEstado(p)">
+                                {{ p.estado }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button (click)="abrirModal(p)" class="btn btn-icon-edit" title="Editar">✏️</button>
+                                <button (click)="eliminarProveedor(p.id)" class="btn btn-icon-delete"
+                                    title="Eliminar">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODAL DE CREACIÓN/EDICIÓN (Overlay simple) -->
+    @if (mostrarModal) {
+    <div class="modal-overlay">
+        <div class="modal-card shadow-lg animation-slide">
+            <div class="modal-header-p p-4 border-bottom d-flex justify-content-between">
+                <h2 class="h5 fw-bold mb-0">{{ editando ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h2>
+                <button (click)="cerrarModal()" class="btn-close-p">&times;</button>
+            </div>
+            <div class="modal-body-p p-4">
+                <form (ngSubmit)="guardarProveedor()">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Nombre de la Empresa</label>
+                        <input type="text" class="form-control bg-light border-0" [(ngModel)]="proveedorActual.nombre"
+                            name="nombre" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Persona de Contacto</label>
+                            <input type="text" class="form-control bg-light border-0"
+                                [(ngModel)]="proveedorActual.contacto" name="contacto">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Categoría</label>
+                            <select class="form-select bg-light border-0" [(ngModel)]="proveedorActual.categoria"
+                                name="categoria">
+                                <option value="Libros">Libros / Biblias</option>
+                                <option value="Instrumentos">Instrumentos Musicales</option>
+                                <option value="Decoración">Decoración / Aula</option>
+                                <option value="Oficina">Oficina / Papelería</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Teléfono</label>
+                            <input type="text" class="form-control bg-light border-0"
+                                [(ngModel)]="proveedorActual.telefono" name="telefono">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Email</label>
+                            <input type="email" class="form-control bg-light border-0"
+                                [(ngModel)]="proveedorActual.email" name="email">
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-naranja-a w-100 fw-bold">Guardar Cambios</button>
+                        <button type="button" (click)="cerrarModal()"
+                            class="btn btn-light w-100 fw-bold">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+</div>

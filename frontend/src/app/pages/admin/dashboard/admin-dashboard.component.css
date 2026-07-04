@@ -1,0 +1,249 @@
+/* ================================================================
+   ADMIN DASHBOARD — Estilos del Panel de Control
+   Integrado en el Main Layout
+   ================================================================ */
+
+.admin-dashboard-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== BANNER DE BIENVENIDA ===== */
+.welcome-banner {
+    background: linear-gradient(135deg, var(--color-marron-medio), var(--color-marron-oscuro));
+    padding: 2.5rem;
+    border-radius: var(--radio-lg);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--sombra-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-banner::after {
+    content: "🛡️";
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-size: 8rem;
+    opacity: 0.1;
+    transform: rotate(-15deg);
+}
+
+.welcome-text h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.welcome-text p {
+    margin: 0.5rem 0 0;
+    opacity: 0.8;
+    font-size: 1.1rem;
+}
+
+.welcome-date {
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.6rem 1.2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+}
+
+/* ===== TARJETAS KPI ===== */
+.kpi-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--radio-md);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    box-shadow: var(--sombra-sm);
+    transition: var(--transicion);
+    border: 1px solid #F0F0F0;
+    height: 100%;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-md);
+    border-color: var(--color-naranja-principal);
+}
+
+.kpi-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.kpi-tienda .kpi-icon {
+    background-color: #ECFDF5;
+}
+
+.kpi-escuela .kpi-icon {
+    background-color: #EFF6FF;
+}
+
+.kpi-clases .kpi-icon {
+    background-color: #FFF7ED;
+}
+
+.kpi-alert .kpi-icon {
+    background-color: #FFF1F2;
+}
+
+.kpi-info h3 {
+    font-size: 0.75rem;
+    color: var(--color-texto-claro);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0.1rem 0;
+}
+
+.kpi-trend {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #10B981;
+}
+
+.kpi-trend.negative {
+    color: #EF4444;
+}
+
+/* ===== CARDS DE DATOS ===== */
+.data-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--radio-md);
+    box-shadow: var(--sombra-sm);
+    border: 1px solid #F0F0F0;
+    height: 100%;
+}
+
+.card-header h2 {
+    font-size: 1.1rem;
+    color: var(--color-marron-oscuro);
+}
+
+/* Tabla Personalizada */
+.custom-table th {
+    border: none;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--color-texto-claro);
+    letter-spacing: 0.5px;
+    padding: 1.2rem 1rem;
+    background-color: #F8FAFC;
+}
+
+.custom-table td {
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    border-top: 1px solid #F1F5F9;
+}
+
+.badge-status {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-status.completado {
+    background-color: #DCFCE7;
+    color: #166534;
+}
+
+.badge-status.pendiente {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-status.enviado {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+/* Lista de Usuarios */
+.user-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #F1F5F9;
+    transition: var(--transicion);
+}
+
+.user-list-item:hover {
+    background-color: #F8FAFC;
+    padding-left: 0.5rem;
+    border-radius: 8px;
+}
+
+.user-initials {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #FFF7ED;
+    color: var(--color-naranja-principal);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-details {
+    flex-grow: 1;
+}
+
+.u-name {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.u-meta {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-texto-claro);
+}
+
+.btn-mini-opt {
+    background: none;
+    border: none;
+    color: #CBD5E1;
+    font-size: 1.2rem;
+    padding: 0.2rem 0.5rem;
+    transition: var(--transicion);
+}
+
+.btn-mini-opt:hover {
+    color: var(--color-marron-oscuro);
+}

@@ -1,0 +1,167 @@
+/* ================================================================
+   REPORTES VENDEDOR — Estilos Analíticos y Visuales
+   Enfoque en métricas, gráficos y metas
+   ================================================================ */
+
+.bg-light-soft {
+    background-color: #F8FAFC;
+}
+
+.text-marron {
+    color: var(--color-marron-oscuro);
+}
+
+.bg-crema-naranja {
+    background-color: #FFF7ED;
+}
+
+/* NAVBAR NAVEGACIÓN */
+.btn-back-reportes {
+    width: 36px;
+    height: 36px;
+    background: #F1F5F9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.btn-back-reportes:hover {
+    transform: scale(1.1);
+    background: var(--color-naranja-principal);
+    color: white;
+}
+
+/* KPI CARDS */
+.report-kpi {
+    transition: transform 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+.report-kpi:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-naranja-principal);
+}
+
+.report-kpi-icon {
+    font-size: 1.5rem;
+    display: inline-block;
+    padding: 8px;
+    border-radius: 10px;
+    line-height: 1;
+}
+
+.report-kpi-icon.exito {
+    background: #F0FDF4;
+    color: #10B981;
+}
+
+.report-kpi-icon.alerta {
+    background: #FFFBEB;
+    color: #F59E0B;
+}
+
+.report-kpi-icon.info {
+    background: #EFF6FF;
+    color: #3B82F6;
+}
+
+.report-kpi-icon.prima {
+    background: #F5F3FF;
+    color: #8B5CF6;
+}
+
+.sub-metrica {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.sub-metrica.exito {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.sub-metrica.info {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.sub-metrica.alerta {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.sub-metrica.prima {
+    background: #EDE9FE;
+    color: #5B21B6;
+}
+
+/* GRÁFICO PERSONALIZADO */
+.report-chart-placeholder {
+    height: 160px;
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 10px;
+}
+
+.chart-bar {
+    width: 40px;
+    background: linear-gradient(to top, #F97316, #FB923C);
+    border-radius: 6px 6px 2px 2px;
+    transition: height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: help;
+    position: relative;
+}
+
+.chart-bar:hover {
+    filter: brightness(1.1);
+}
+
+/* GAUGE DE META */
+.goal-gauge {
+    width: 220px;
+}
+
+.gauge-svg {
+    transform: rotate(0deg);
+}
+
+.gauge-value {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.fw-extrabold {
+    font-weight: 900;
+}
+
+/* TABLA REPORTES */
+.custom-report-table thead th {
+    border: none;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #64748B;
+    padding: 12px 8px;
+}
+
+.custom-report-table tbody td {
+    padding: 10px 8px;
+    border-color: #F1F5F9;
+    font-size: 0.85rem;
+}
+
+.smaller {
+    font-size: 0.73rem;
+}
+
+@media (max-width: 576px) {
+    .chart-bar {
+        width: 25px;
+    }
+}

@@ -1,0 +1,168 @@
+<div class="reportes-almacen-container">
+    <!-- ENCABEZADO DE REPORTE -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0 text-marron">Reporte de Inventario por Rango</h1>
+            <p class="text-muted small mb-0">Consulta dinámica de existencias según el período seleccionado</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button (click)="exportarCSV()" class="btn btn-sm btn-outline-marron rounded-pill fw-bold" [disabled]="!inventarioItems().length">
+                ⬇️ Exportar CSV
+            </button>
+            <button (click)="imprimirReporte()" class="btn btn-sm btn-marron rounded-pill fw-bold" [disabled]="!inventarioItems().length">
+                🖨️ Imprimir
+            </button>
+        </div>
+    </div>
+
+    <!-- FILTRO DE FECHAS -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-muted">Fecha Inicio</label>
+                <input type="date" class="form-control form-control-sm rounded-pill border-light bg-light px-3"
+                    [(ngModel)]="fechaInicio">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-muted">Fecha Fin</label>
+                <input type="date" class="form-control form-control-sm rounded-pill border-light bg-light px-3"
+                    [(ngModel)]="fechaFin">
+            </div>
+            <div class="col-md-4">
+                <button (click)="cargarReporte()" class="btn btn-marron w-100 rounded-pill fw-bold btn-sm" [disabled]="cargando()">
+                    {{ cargando() ? 'Consultando...' : 'Filtrar 🔍' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4 px-lg-5">
+
+        <!-- DASHBOARD DE MÉTRICAS -->
+        <div class="row g-4 mb-4">
+            @for (m of metricasAlmacen(); track m.titulo) {
+            <div class="col-md-6 col-xl-3">
+                <div class="kpi-inv-card p-4 rounded-4 shadow-sm border-0 bg-white">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="kpi-inv-icon" [class]="m.color">{{ m.icono }}</div>
+                        <span class="badge-sub text-uppercase">{{ m.sub }}</span>
+                    </div>
+                    <p class="smaller text-muted fw-bold mb-1">{{ m.titulo }}</p>
+                    <h2 class="h3 fw-bold mb-0 text-marron">{{ m.valor }}</h2>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="row g-4">
+
+            <!-- TABLA DE REPORTE -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h6 fw-bold m-0 d-flex align-items-center gap-2">
+                            📋 Detalle de Existencias por Período
+                        </h2>
+                        <span class="small text-muted">{{ inventarioItems().length }} productos</span>
+                    </div>
+
+                    @if (cargando()) {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-marron" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                    } @else {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle inv-table">
+                            <thead>
+                                <tr>
+                                    <th>Referencia</th>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th class="text-center">Saldo Inicial</th>
+                                    <th class="text-center">Entradas</th>
+                                    <th class="text-center">Salidas</th>
+                                    <th class="text-center">Saldo Final</th>
+                                    <th class="text-end">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of inventarioItems(); track item.id) {
+                                <tr>
+                                    <td><code class="small fw-bold text-marron">{{ item.referencia }}</code></td>
+                                    <td><span class="small fw-bold">{{ item.producto }}</span></td>
+                                    <td><span class="badge bg-light text-dark fw-normal">{{ item.categoria }}</span></td>
+                                    <td class="text-center fw-bold">{{ item.saldo_inicial }}</td>
+                                    <td class="text-center fw-bold text-success">{{ item.entradas }}</td>
+                                    <td class="text-center fw-bold text-danger">{{ item.salidas }}</td>
+                                    <td class="text-center">
+                                        <span class="fw-bold" [class.text-danger]="item.saldo_final <= 0" [class.text-warning]="item.saldo_final > 0 && item.saldo_final < 5">
+                                            {{ item.saldo_final }}
+                                        </span>
+                                        <div class="mini-bar mt-1">
+                                            <div class="mini-bar-fill"
+                                                [style.width]="(item.saldo_final > 100 ? 100 : item.saldo_final) + '%'"
+                                                [class]="'bg-' + getEstadoClase(item.saldo_final)"></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge-status" [class]="getEstadoClase(item.saldo_final)">
+                                            {{ getEstadoTexto(item.saldo_final) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+
+                    @if (!cargando() && inventarioItems().length === 0) {
+                    <div class="text-center py-4 text-muted">
+                        <p>No hay datos para el rango de fechas seleccionado.</p>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- DISTRIBUCIÓN POR CATEGORÍA -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+                    <h2 class="h6 fw-bold mb-4">📊 Distribución por Categoría</h2>
+                    @for (cat of distribucionCategorias(); track cat.nombre) {
+                    <div class="cat-item mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="smaller fw-bold">{{ cat.nombre }}</span>
+                            <span class="smaller font-mono">{{ cat.porcentaje }}%</span>
+                        </div>
+                        <div class="progress-inv">
+                            <div class="progress-inv-fill" [class]="cat.color" [style.width]="cat.porcentaje + '%'"></div>
+                        </div>
+                    </div>
+                    }
+                    @if (distribucionCategorias().length === 0) {
+                    <p class="text-muted small">Sin datos para mostrar</p>
+                    }
+                </div>
+
+                <div class="alert-inv p-4 rounded-4 bg-marron-docente text-white shadow-lg">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="fs-2">📉</span>
+                        <h3 class="h6 fw-bold m-0">Resumen del Período</h3>
+                    </div>
+                    <p class="smaller opacity-75 mb-4">
+                        @if (metricasAlmacen().length > 0) {
+                        Saldo inicial: <strong>{{ metricasAlmacen()[0].valor }}</strong> unidades,
+                        entradas: <strong>{{ metricasAlmacen()[1].valor }}</strong>,
+                        salidas: <strong>{{ metricasAlmacen()[2].valor }}</strong>,
+                        saldo final: <strong>{{ metricasAlmacen()[3].valor }}</strong>.
+                        }
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,248 @@
+/* ================================================================
+   REPORTE COMPRAS — Estilos Financieros y Administrativos
+   Enfoque en orden, flujo y control de gasto
+   ================================================================ */
+
+.bg-light-soft {
+    background-color: #F8FAFC;
+}
+
+.text-marron {
+    color: var(--color-marron-oscuro);
+}
+
+.bg-soft-azul {
+    background-color: #F0F9FF;
+}
+
+/* NAVBAR NAVEGACIÓN */
+.btn-back-compras {
+    width: 38px;
+    height: 38px;
+    background: #FFF7ED;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+.btn-back-compras:hover {
+    transform: scale(1.1);
+    background: var(--color-naranja-principal);
+    color: white;
+}
+
+/* KPI CARDS */
+.kpi-compras-card {
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.kpi-compras-card:hover {
+    transform: translateY(-5px);
+    border-bottom-color: var(--color-naranja-principal);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.kpi-compras-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.kpi-compras-icon.naranja {
+    background: #FFF7ED;
+    color: #EA580C;
+}
+
+.kpi-compras-icon.azul {
+    background: #EFF6FF;
+    color: #2563EB;
+}
+
+.kpi-compras-icon.verde {
+    background: #F0FDF4;
+    color: #16A34A;
+}
+
+.kpi-compras-icon.rojo {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+/* TABLA COMPRAS */
+.compras-table thead th {
+    background: #F8FAFC;
+    color: #64748B;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    padding: 1rem;
+}
+
+.compras-table tbody td {
+    padding: 1rem;
+    border-color: #F1F5F9;
+}
+
+.prov-avatar {
+    width: 28px;
+    height: 28px;
+    background: #F1F5F9;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.badge-status-c {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 30px;
+    white-space: nowrap;
+}
+
+.badge-status-c.success {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.badge-status-c.warning {
+    background: #FEF3C7;
+    color: #B45309;
+}
+
+.badge-status-c.info {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.badge-status-c.danger {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+/* BARRAS DE PROGRESO COMPRAS */
+.bar-progress-c {
+    height: 6px;
+    background: #F1F5F9;
+    border-radius: 10px;
+}
+
+.bar-fill-c {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.8s ease-in-out;
+}
+
+.bar-fill-c.bg-naranja {
+    background: #F97316;
+}
+
+.bar-fill-c.bg-azul {
+    background: #3B82F6;
+}
+
+.bar-fill-c.bg-verde {
+    background: #22C55E;
+}
+
+.smaller {
+    font-size: 0.73rem;
+}
+
+@media (max-width: 768px) {
+    .navbar .h5 {
+        font-size: 1rem;
+    }
+}
+
+/* MODAL OVERLAY – Nueva Orden de Compra */
+.modal-overlay-c {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+}
+
+.modal-card-c {
+    background: #fff;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 780px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header-c {
+    flex-shrink: 0;
+    background: #FFF7ED;
+}
+
+.modal-body-c {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.btn-close-c {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    padding: 0 0.25rem;
+}
+
+.btn-close-c:hover {
+    color: #EA580C;
+}
+
+.animation-slide-c {
+    animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.detalle-table thead th {
+    background: #F8FAFC;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748B;
+    padding: 0.6rem 0.5rem;
+    border: none;
+}
+
+.detalle-table tbody td {
+    padding: 0.4rem 0.5rem;
+    vertical-align: middle;
+}
+
+.detalle-table tfoot td {
+    padding: 0.6rem 0.5rem;
+    border-top: 2px solid #E2E8F0;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}

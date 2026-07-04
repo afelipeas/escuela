@@ -1,0 +1,613 @@
+/* ================================================================
+   CLIENTE PEDIDOS — Historial de Compras y Seguimiento
+   ================================================================ */
+
+.cliente-pedidos-container {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== BANNER DE BIENVENIDA ===== */
+.welcome-banner {
+    background: linear-gradient(135deg, var(--color-marron-medio, #5C4033), var(--color-marron-oscuro, #3E2723));
+    padding: 2rem 2.5rem;
+    border-radius: var(--radio-lg, 16px);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--sombra-md, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-banner::after {
+    content: "📦";
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    font-size: 8rem;
+    opacity: 0.08;
+    transform: rotate(-12deg);
+    pointer-events: none;
+}
+
+.welcome-text h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.welcome-text p {
+    margin: 0.5rem 0 0;
+    opacity: 0.85;
+    font-size: 1.05rem;
+}
+
+.btn-banner-shop {
+    background: linear-gradient(135deg, var(--color-naranja-principal, #E65100), #FF8F00);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.6rem;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(230, 81, 0, 0.3);
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.btn-banner-shop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(230, 81, 0, 0.4);
+    filter: brightness(1.05);
+}
+
+/* ===== ESTADO VACÍO ===== */
+.empty-state-card {
+    background-color: white;
+    border: 1.5px dashed #CBD5E1;
+    border-radius: 16px;
+    padding: 3.5rem 2rem;
+    max-width: 600px;
+    margin: 3rem auto;
+    box-shadow: var(--sombra-sm, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.2rem;
+}
+
+.empty-state-card h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-marron-oscuro, #3E2723);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-card p {
+    font-size: 0.95rem;
+    color: #64748B;
+    line-height: 1.6;
+}
+
+.btn-explore-shop {
+    background: linear-gradient(135deg, var(--color-marron-oscuro, #3E2723), var(--color-marron-medio, #5C4033));
+    color: white;
+    border: none;
+    padding: 0.85rem 1.8rem;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-explore-shop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(62, 39, 35, 0.2);
+}
+
+/* ===== GRID DE PEDIDOS ===== */
+.pedidos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 1.6rem;
+}
+
+.pedido-card {
+    background-color: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    box-shadow: var(--sombra-sm, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+}
+
+.pedido-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-naranja-principal, #E65100);
+    box-shadow: var(--sombra-md, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+}
+
+/* Encabezado */
+.pedido-card-header {
+    background-color: #F8FAFC;
+    padding: 1.2rem;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.code-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.code-info .label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.code-info .code {
+    font-family: Consolas, monospace;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-marron-oscuro, #3E2723);
+}
+
+/* Cuerpo */
+.pedido-card-body {
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-grow: 1;
+}
+
+.info-row {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+}
+
+.info-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.info-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.info-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.info-value {
+    font-size: 0.9rem;
+    color: #334155;
+    font-weight: 600;
+}
+
+.truncate-address {
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pay-points {
+    color: #D97706;
+    font-weight: 700;
+}
+
+.pay-cash {
+    color: #059669;
+    font-weight: 700;
+}
+
+/* Total Fila */
+.total-row {
+    border-top: 1px dashed #E2E8F0;
+    padding-top: 0.9rem;
+    margin-top: 0.4rem;
+}
+
+.total-price {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-naranja-principal, #E65100);
+}
+
+/* Pie de Tarjeta */
+.pedido-card-footer {
+    padding: 1rem 1.4rem;
+    border-top: 1px solid #F1F5F9;
+    background-color: #F8FAFC;
+}
+
+.btn-details {
+    width: 100%;
+    background-color: white;
+    color: #475569;
+    border: 1.5px solid #E2E8F0;
+    padding: 0.65rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-details:hover {
+    background-color: var(--color-marron-oscuro, #3E2723);
+    color: white;
+    border-color: var(--color-marron-oscuro, #3E2723);
+}
+
+/* ===== BADGES DE ESTADO ===== */
+.badge-status {
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.badge-status.pendiente {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.badge-status.procesando {
+    background-color: #E0F2FE;
+    color: #0369A1;
+}
+
+.badge-status.enviado {
+    background-color: #E0F2FE;
+    color: #0284C7;
+}
+
+.badge-status.completado,
+.badge-status.entregado {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-status.cancelado {
+    background-color: #FEE2E2;
+    color: #B91C1C;
+}
+
+/* ===== MODAL DE DETALLE Y RASTREO ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeInModal 0.3s ease-out;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-card {
+    background-color: white;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpModal {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--color-marron-oscuro, #3E2723), var(--color-marron-medio, #5C4033));
+    padding: 1.5rem 2rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.btn-close-modal {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-close-modal:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 1.8rem 2rem;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+.section-title {
+    margin: 0 0 0.8rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-marron-oscuro, #3E2723);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-left: 3px solid var(--color-naranja-principal, #E65100);
+    padding-left: 0.6rem;
+}
+
+/* --- TRACKER DE ENVÍO --- */
+.cancelled-tracker-box {
+    background-color: #FEF2F2;
+    border: 1px solid #FEE2E2;
+    color: #991B1B;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.tracker-bar-container {
+    position: relative;
+    padding: 1.5rem 0.5rem 0.5rem;
+}
+
+.tracker-progress-line {
+    position: absolute;
+    top: calc(1.5rem + 18px);
+    left: 40px;
+    right: 40px;
+    height: 6px;
+    background-color: #E2E8F0;
+    z-index: 1;
+    border-radius: 3px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10B981, #059669);
+    transition: width 0.4s ease;
+    border-radius: 3px;
+}
+
+.tracker-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+}
+
+.step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #E2E8F0;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border: 3.5px solid white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.step.active .step-circle {
+    background-color: #D1FAE5;
+    color: #065F46;
+    border-color: #10B981;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.step-label {
+    margin-top: 0.5rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #94A3B8;
+    text-align: center;
+}
+
+.step.active .step-label {
+    color: #065F46;
+}
+
+/* --- DATOS DE DESPACHO --- */
+.dispatch-card {
+    background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+}
+
+.dispatch-card p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.dispatch-card p strong {
+    color: #1E293B;
+}
+
+/* --- ARTÍCULOS --- */
+.items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border: 1px solid #F1F5F9;
+    border-radius: 10px;
+    background-color: #F8FAFC;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.item-avatar {
+    font-size: 1.2rem;
+}
+
+.item-name-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.item-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1E293B;
+}
+
+.item-qty {
+    font-size: 0.78rem;
+    color: #64748B;
+    font-weight: 600;
+}
+
+.item-price {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-marron-oscuro, #3E2723);
+}
+
+/* Resumen Financiero */
+.summary-card {
+    border-top: 1.5px dashed #E2E8F0;
+    padding-top: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    color: #64748B;
+    font-weight: 500;
+}
+
+.total-highlight {
+    border-top: 1px solid #E2E8F0;
+    padding-top: 0.5rem;
+    margin-top: 0.2rem;
+    font-size: 1.05rem;
+    color: var(--color-naranja-principal, #E65100);
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #F1F5F9;
+    padding: 1.2rem 2rem;
+    background-color: #F8FAFC;
+}
+
+.btn-close-footer {
+    background-color: #F1F5F9;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-close-footer:hover {
+    background-color: #E2E8F0;
+}
+
+/* Spinner */
+.spinner {
+    display: inline-block;
+    animation: rotate 1.5s linear infinite;
+    font-size: 2rem;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

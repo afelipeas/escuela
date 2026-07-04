@@ -1,0 +1,152 @@
+<div class="vendedor-content-body">
+    <!-- KPI'S -->
+    <div class="row g-4 mb-4">
+        @for (kpi of kpis; track kpi.titulo) {
+        <div class="col-sm-6 col-md-3">
+            <div class="kpi-v-card" [class]="kpi.clase">
+                <div class="d-flex justify-content-between">
+                    <span class="kpi-v-icon">{{ kpi.icono }}</span>
+                    <span class="kpi-v-trend">{{ kpi.tendencia }}</span>
+                </div>
+                <h2 class="kpi-v-valor mt-2 mb-0">{{ kpi.valor }}</h2>
+                <p class="kpi-v-titulo mb-0">{{ kpi.titulo }}</p>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="row g-4">
+        <!-- TABLA DE VENTAS -->
+        <div class="col-lg-8">
+            <div class="card-vendedor p-4 shadow-sm bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h5 fw-bold mb-0">🛒 Últimas Transacciones</h2>
+                    <button class="btn btn-naranja-v btn-sm" routerLink="/vendedor/nueva-venta">Nueva Venta ➕</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table vendedor-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (v of ventasRecientes; track v.id) {
+                            <tr>
+                                <td><small class="fw-bold">{{ v.id }}</small></td>
+                                <td>
+                                    <p class="mb-0 fw-bold small">{{ v.cliente }}</p>
+                                    <small class="text-muted d-block text-truncate" style="max-width: 150px;">{{
+                                        v.producto }}</small>
+                                </td>
+                                <td class="fw-bold text-success">{{ v.monto }}</td>
+                                <td>
+                                    <span class="v-status" [class]="getEstadoClass(v.estado)">
+                                        {{ v.estado }}
+                                    </span>
+                                </td>
+                                <td><button class="btn-opt" (click)="verDetalle(v)">👁️</button></td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No hay transacciones recientes</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONSULTAS CLIENTES -->
+        <div class="col-lg-4">
+            <div class="card-vendedor p-4 shadow-sm bg-white h-100">
+                <h2 class="h5 fw-bold mb-4">💬 Consultas Pendientes</h2>
+                <div class="chat-list">
+                    @for (chat of consultasClientes; track chat.cliente) {
+                    <div class="chat-item d-flex gap-3 p-3 mb-2 rounded-3 border-light">
+                        <div class="chat-avatar">👤</div>
+                        <div class="chat-body">
+                            <p class="chat-user mb-0"><strong>{{ chat.cliente }}</strong></p>
+                            <p class="chat-msg mb-0 small text-muted">{{ chat.asunto }}</p>
+                            <small class="chat-time text-orange">{{ chat.tiempo }}</small>
+                        </div>
+                    </div>
+                    }
+                </div>
+                <button class="btn btn-outline-marron w-100 mt-3" routerLink="/vendedor/soporte">Ir al Centro de Mensajes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLE DE TRANSACCIÓN -->
+    @if (pedidoDetalle) {
+        <div class="modal-overlay-v" (click)="cerrarDetalle()">
+            <div class="modal-card-v" (click)="$event.stopPropagation()">
+                <div class="modal-header-v">
+                    <h5 class="fw-bold mb-0">Detalle del Pedido {{ pedidoDetalle.codigo || pedidoDetalle.id }}</h5>
+                    <button class="btn-close-v" (click)="cerrarDetalle()">×</button>
+                </div>
+                <div class="modal-body-v">
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-4">
+                            <p class="small text-muted mb-1">Cliente</p>
+                            <p class="fw-bold mb-0">{{ pedidoDetalle.cliente }}</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="small text-muted mb-1">Fecha</p>
+                            <p class="fw-bold mb-0">{{ pedidoDetalle.fecha }}</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="small text-muted mb-1">Total</p>
+                            <p class="fw-bold text-success mb-0">{{ pedidoDetalle.monto }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="small text-muted">Estado: </span>
+                        <span class="v-status" [class]="getEstadoClass(pedidoDetalle.estado)">{{ pedidoDetalle.estado }}</span>
+                    </div>
+
+                    @if (cargandoDetalle) {
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm text-naranja" role="status"></div>
+                        </div>
+                    }
+
+                    @if (itemsDetalle.length > 0) {
+                        <h6 class="fw-bold mb-2">Productos</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-end">Precio Unit.</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (item of itemsDetalle; track $index) {
+                                        <tr>
+                                            <td>{{ item.producto_nombre }}</td>
+                                            <td class="text-center">{{ item.cantidad }}</td>
+                                            <td class="text-end">${{ item.precio_unitario }}</td>
+                                            <td class="text-end fw-bold">${{ item.subtotal }}</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer-v">
+                    <button class="btn btn-sm btn-secondary rounded-3" (click)="cerrarDetalle()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

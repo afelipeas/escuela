@@ -1,0 +1,183 @@
+/* ================================================================
+   DOCENTE DASHBOARD — Estilos del Panel del Profesor
+   Enfoque funcional, cálido y profesional
+   ================================================================ */
+
+.text-marron {
+    color: var(--color-marron-oscuro);
+}
+
+.text-orange {
+    color: var(--color-naranja-principal);
+}
+
+/* KPI CARDS */
+.teach-kpi-card {
+    transition: transform 0.3s ease;
+    border: 1px solid #EDEDED;
+}
+
+.teach-kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+.icon-box-teach {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.bg-info {
+    background-color: #E0F2FE !important;
+    color: #0369A1;
+}
+
+.bg-primary {
+    background-color: #E0E7FF !important;
+    color: #4338CA;
+}
+
+.bg-warning {
+    background-color: #FEF3C7 !important;
+    color: #92400E;
+}
+
+.bg-danger {
+    background-color: #FEE2E2 !important;
+    color: #B91C1C;
+}
+
+.bg-crema-naranja {
+    background-color: #FFF7ED;
+    border: 1px solid #FFEDD5;
+}
+
+.btn-outline-naranja {
+    color: var(--color-naranja-principal);
+    border-color: var(--color-naranja-principal);
+    font-weight: 600;
+}
+
+.bg-marron-docente {
+    background: linear-gradient(135deg, #78350F, #451A03);
+}
+
+.bg-white-10 {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.border-white-05 {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-light-glass {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+}
+
+.btn-light-glass:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-naranja-teach {
+    background: var(--color-naranja-principal);
+    color: white;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+}
+
+.extra-small {
+    font-size: 0.75rem;
+}
+
+.placeholder-light::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-white-outline {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s;
+    font-size: 0.8rem;
+}
+
+.btn-white-outline:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.border-white-10 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.form-select.bg-white-10 {
+    color: white;
+}
+
+.form-select.bg-white-10 option {
+    background: #451A03;
+    color: white;
+}
+
+.notification-form select option {
+    background-color: #451A03;
+}
+
+/* MODAL OVERLAY & UPLOAD ZONE */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    z-index: 1050;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.modal-content {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.upload-zone {
+    border: 2px dashed #CBD5E1;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.upload-zone:hover {
+    border-color: var(--color-naranja-principal);
+    background-color: #FFF7ED !important;
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.smaller {
+    font-size: 0.8rem;
+}

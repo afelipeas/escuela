@@ -1,0 +1,244 @@
+<div class="cliente-pedidos-container p-4">
+    <!-- BANNER DE BIENVENIDA -->
+    <div class="welcome-banner mb-4">
+        <div class="welcome-text">
+            <h2>📦 Mis Pedidos y Canjes</h2>
+            <p>Monitorea en tiempo real tus canjes por Puntos Fe, el estado del envío y tu historial de compras.</p>
+        </div>
+        <button class="btn-banner-shop" (click)="irATienda()">
+            🛒 Ir a la Tienda
+        </button>
+    </div>
+
+    <!-- CARGANDO -->
+    @if (cargando && pedidos.length === 0) {
+        <div class="loading-state p-5 text-center">
+            <span class="spinner">⏳</span>
+            <p class="mt-2 text-muted">Obteniendo tu historial de pedidos...</p>
+        </div>
+    }
+
+    <!-- ESTADO VACÍO (NO PEDIDOS) -->
+    @if (!cargando && pedidos.length === 0) {
+        <div class="empty-state-card text-center p-5">
+            <div class="empty-icon">🛍️</div>
+            <h3>¡Aún no has realizado ningún pedido!</h3>
+            <p class="text-muted">Visita el catálogo de nuestra tienda virtual, acumula Puntos Fe asistiendo a tus clases y completando lecciones, y canjéalos por fabulosos premios.</p>
+            <button class="btn-explore-shop mt-3" (click)="irATienda()">
+                🛒 Explorar la Tienda
+            </button>
+        </div>
+    }
+
+    <!-- GRID DE PEDIDOS -->
+    @if (pedidos.length > 0) {
+        <div class="pedidos-grid">
+            @for (p of pedidos; track p.id) {
+                <div class="pedido-card">
+                    <!-- ENCABEZADO DE TARJETA -->
+                    <div class="pedido-card-header">
+                        <div class="code-info">
+                            <span class="label">Código de Orden</span>
+                            <span class="code">{{ p.codigo }}</span>
+                        </div>
+                        <span class="badge-status" [class]="p.estado.toLowerCase()">
+                            {{ p.estado | uppercase }}
+                        </span>
+                    </div>
+
+                    <!-- CUERPO DE TARJETA -->
+                    <div class="pedido-card-body">
+                        <div class="info-row">
+                            <span class="info-icon">📅</span>
+                            <div class="info-details">
+                                <span class="info-label">Fecha de Compra</span>
+                                <span class="info-value">{{ p.fecha_pedido | date:'dd/MM/yyyy HH:mm' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-icon">💳</span>
+                            <div class="info-details">
+                                <span class="info-label">Método de Pago</span>
+                                <span class="info-value">
+                                    @if (p.metodo_pago === 'puntos') {
+                                        <span class="pay-points">💎 Canje por Puntos Fe</span>
+                                    } @else {
+                                        <span class="pay-cash">💵 Efectivo / Transferencia</span>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-icon">📍</span>
+                            <div class="info-details">
+                                <span class="info-label">Dirección de Envío</span>
+                                <span class="info-value truncate-address" [title]="p.direccion_envio">
+                                    {{ p.nombre_envio }} — {{ p.direccion_envio }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-row total-row">
+                            <span class="info-icon">💰</span>
+                            <div class="info-details">
+                                <span class="info-label text-dark fw-bold">Total Pagado</span>
+                                <span class="info-value total-price">
+                                    @if (p.metodo_pago === 'puntos') {
+                                        {{ p.total }} Pts Fe
+                                    } @else {
+                                        ${{ p.total | number }}
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACCIONES DE TARJETA -->
+                    <div class="pedido-card-footer">
+                        <button class="btn-details" (click)="abrirDetalles(p)">
+                            🔍 Rastrear y Ver Detalles
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- MODAL DE DETALLE Y RASTREO -->
+    @if (mostrarModal && pedidoSeleccionado) {
+        <div class="modal-overlay" (click)="cerrarModal()">
+            <div class="modal-card" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>📦 Detalle de Seguimiento - {{ pedidoSeleccionado.codigo }}</h3>
+                    <button class="btn-close-modal" (click)="cerrarModal()">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- SECCIÓN 1: TRACKER DE ENVÍO -->
+                    <div class="tracker-section mb-4">
+                        <h4 class="section-title">📍 Estado del Envío</h4>
+                        
+                        @if (pedidoSeleccionado.estado.toLowerCase() === 'cancelado') {
+                            <div class="cancelled-tracker-box">
+                                🚫 Esta orden ha sido cancelada por el administrador. Los puntos o montos fueron devueltos a tu saldo.
+                            </div>
+                        } @else {
+                            <div class="tracker-bar-container">
+                                <!-- Línea de progreso de fondo -->
+                                <div class="tracker-progress-line">
+                                    <div class="progress-fill" 
+                                         [style.width.%]="(getStepActive(pedidoSeleccionado.estado) - 1) * 33.33"></div>
+                                </div>
+
+                                <!-- Pasos -->
+                                <div class="tracker-steps">
+                                    <div class="step" [class.active]="getStepActive(pedidoSeleccionado.estado) >= 1">
+                                        <div class="step-circle">📝</div>
+                                        <span class="step-label">Recibido</span>
+                                    </div>
+                                    <div class="step" [class.active]="getStepActive(pedidoSeleccionado.estado) >= 2">
+                                        <div class="step-circle">📦</div>
+                                        <span class="step-label">Preparado</span>
+                                    </div>
+                                    <div class="step" [class.active]="getStepActive(pedidoSeleccionado.estado) >= 3">
+                                        <div class="step-circle">🚚</div>
+                                        <span class="step-label">En Camino</span>
+                                    </div>
+                                    <div class="step" [class.active]="getStepActive(pedidoSeleccionado.estado) >= 4">
+                                        <div class="step-circle">🏡</div>
+                                        <span class="step-label">Entregado</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- SECCIÓN 2: DIRECCIÓN DE DESPACHO -->
+                    <div class="dispatch-section mb-4">
+                        <h4 class="section-title">🚚 Datos de Despacho</h4>
+                        <div class="dispatch-card">
+                            <p><strong>Destinatario:</strong> {{ pedidoSeleccionado.nombre_envio }}</p>
+                            <p><strong>Dirección:</strong> {{ pedidoSeleccionado.direccion_envio }}</p>
+                            <p><strong>Método de Envío:</strong> Correo Nacional Certificado</p>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 3: ARTÍCULOS PEDIDOS -->
+                    <div class="items-section mb-4">
+                        <h4 class="section-title">🛒 Artículos de la Orden</h4>
+                        
+                        @if (cargandoDetalle) {
+                            <div class="text-center p-3">
+                                <span class="spinner">⏳</span>
+                                <p class="text-muted small mt-1">Cargando artículos...</p>
+                            </div>
+                        } @else {
+                            <div class="items-list">
+                                @for (item of itemsDetalle; track item.id) {
+                                    <div class="item-row">
+                                        <div class="item-info">
+                                            <span class="item-avatar">🛍️</span>
+                                            <div class="item-name-desc">
+                                                <span class="item-name">{{ item.producto_nombre }}</span>
+                                                <span class="item-qty">Cantidad: x{{ item.cantidad }}</span>
+                                            </div>
+                                        </div>
+                                        <span class="item-price">
+                                            @if (pedidoSeleccionado.metodo_pago === 'puntos') {
+                                                {{ item.subtotal }} Pts
+                                            } @else {
+                                                ${{ item.subtotal | number }}
+                                            }
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Resumen Financiero -->
+                            <div class="summary-card mt-3">
+                                <div class="summary-line">
+                                    <span>Subtotal</span>
+                                    <span>
+                                        @if (pedidoSeleccionado.metodo_pago === 'puntos') {
+                                            {{ pedidoSeleccionado.subtotal }} Pts
+                                        } @else {
+                                            ${{ pedidoSeleccionado.subtotal | number }}
+                                        }
+                                    </span>
+                                </div>
+                                <div class="summary-line">
+                                    <span>Costo de Envío</span>
+                                    <span>
+                                        @if (pedidoSeleccionado.metodo_pago === 'puntos') {
+                                            Gratis
+                                        } @else {
+                                            {{ pedidoSeleccionado.costo_envio > 0 ? '$' + (pedidoSeleccionado.costo_envio | number) : 'Gratis' }}
+                                        }
+                                    </span>
+                                </div>
+                                <div class="summary-line total-highlight">
+                                    <strong>Total General</strong>
+                                    <strong>
+                                        @if (pedidoSeleccionado.metodo_pago === 'puntos') {
+                                            {{ pedidoSeleccionado.total }} Pts Fe
+                                        } @else {
+                                            ${{ pedidoSeleccionado.total | number }}
+                                        }
+                                    </strong>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-close-footer" (click)="cerrarModal()">
+                        Cerrar Rastreador
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

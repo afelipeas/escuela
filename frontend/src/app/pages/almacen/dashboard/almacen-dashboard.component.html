@@ -1,0 +1,181 @@
+<div class="content-body-a">
+
+    <!-- TARJETAS KPI -->
+    <div class="row g-4 mb-4">
+        @for (kpi of kpis; track kpi.titulo) {
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-a-card" [class]="kpi.clase">
+                <div class="kpi-a-header">
+                    <span class="kpi-a-icon">{{ kpi.icono }}</span>
+                    <span class="kpi-a-trend">{{ kpi.tendencia }}</span>
+                </div>
+                <h3 class="kpi-a-val mb-0">{{ kpi.valor }}</h3>
+                <p class="kpi-a-lab mb-0">{{ kpi.titulo }}</p>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- TABLA DE INVENTARIO COMPLETO (CARGA INMEDIATA) -->
+    <div class="white-card p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h2 class="h5 fw-bold mb-0">📦 Stock Actual del Almacén</h2>
+                <p class="text-muted small mb-0">
+                    @if (!cargandoInventario()) {
+                        {{ inventarioFiltrado.length }} de {{ inventarioCompleto().length }} productos
+                    } @else {
+                        Cargando inventario...
+                    }
+                </p>
+            </div>
+            <!-- Buscador -->
+            <div class="search-stock-wrap">
+                <span class="search-icon-stock">🔍</span>
+                <input
+                    type="text"
+                    class="search-stock-input"
+                    placeholder="Buscar producto, categoría..."
+                    [value]="busqueda()"
+                    (input)="busqueda.set($any($event.target).value)"
+                >
+            </div>
+        </div>
+
+        @if (cargandoInventario()) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-warning" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="text-muted mt-3 small">Cargando inventario completo...</p>
+        </div>
+        } @else if (inventarioFiltrado.length === 0) {
+        <div class="text-center py-5 text-muted">
+            <span class="fs-1">📭</span>
+            <p class="mt-2">No se encontraron productos con ese criterio.</p>
+        </div>
+        } @else {
+        <div class="table-responsive">
+            <table class="table almacen-table">
+                <thead>
+                    <tr>
+                        <th>Referencia</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th class="text-center">Stock Actual</th>
+                        <th class="text-center">Stock Mínimo</th>
+                        <th class="text-center">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of inventarioFiltrado; track item.id) {
+                    <tr>
+                        <td><code class="small fw-bold text-marron">{{ item.referencia }}</code></td>
+                        <td>
+                            <p class="mb-0 fw-bold">{{ item.nombre }}</p>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark fw-normal">{{ item.categoria || 'Sin categoría' }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="fw-bold fs-6"
+                                [class.text-danger]="item.estado === 'agotado'"
+                                [class.text-warning]="item.estado === 'critico'"
+                                [class.text-success]="item.estado === 'saludable'">
+                                {{ item.stock_actual }}
+                            </span>
+                        </td>
+                        <td class="text-center text-muted">{{ item.stock_minimo }}</td>
+                        <td class="text-center">
+                            <span class="badge-status-inv" [class]="getEstadoClase(item.estado)">
+                                {{ getEstadoTexto(item.estado) }}
+                            </span>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+
+    <div class="row g-4">
+        <!-- COLUMNA IZQUIERDA: STOCK CRÍTICO -->
+        <div class="col-lg-7">
+            <div class="white-card p-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h5 fw-bold mb-0">⚠️ Alerta de Reabastecimiento</h2>
+                    <button class="btn btn-sm btn-naranja-a" routerLink="/almacen/compras">Generar Orden Pedido</button>
+                </div>
+
+                @if (stockCritico.length === 0) {
+                <div class="text-center py-4 text-muted">
+                    <span class="fs-2">✅</span>
+                    <p class="mt-2 small">¡Excelente! No hay productos en estado crítico.</p>
+                </div>
+                } @else {
+                <div class="table-responsive">
+                    <table class="table almacen-table">
+                        <thead>
+                            <tr>
+                                <th>Producto (SKU)</th>
+                                <th>Stock</th>
+                                <th>Mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (item of stockCritico; track item.sku) {
+                            <tr>
+                                <td>
+                                    <p class="mb-0 fw-bold">{{ item.producto }}</p>
+                                    <small class="text-muted">{{ item.sku }}</small>
+                                </td>
+                                <td class="fw-bold">{{ item.stock }}</td>
+                                <td class="text-muted">{{ item.min }} units</td>
+                                <td>
+                                    <div class="progress-a">
+                                        <div class="progress-a-bar" [style.width.%]="(item.stock/item.min)*100">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: MOVIMIENTOS -->
+        <div class="col-lg-5">
+            <div class="white-card p-4 shadow-sm h-100">
+                <h2 class="h5 fw-bold mb-4">🔄 Movimientos Recientes</h2>
+                <div class="timeline-a">
+                    @for (mov of movimientosRecientes; track mov.fecha) {
+                    <div class="mov-item">
+                        <div class="mov-type-icon" [class]="mov.tipo.toLowerCase()">
+                            {{ mov.tipo === 'Entrada' ? '📥' : mov.tipo === 'Salida' ? '📤' : '⚙️' }}
+                        </div>
+                        <div class="mov-info">
+                            <p class="mov-title mb-0"><strong>{{ mov.tipo }}</strong>: {{ mov.producto }}</p>
+                            <p class="mov-meta mb-0">{{ mov.responsible }} · {{ mov.fecha }}</p>
+                        </div>
+                        <div class="mov-qty" [class.plus]="mov.tipo === 'Entrada'"
+                            [class.minus]="mov.tipo === 'Salida'">
+                            {{ mov.cantidad }}
+                        </div>
+                    </div>
+                    } @empty {
+                    <div class="text-center py-4 text-muted">
+                        <p class="small">No hay movimientos recientes registrados.</p>
+                    </div>
+                    }
+                </div>
+                <button class="btn btn-outline-a w-100 mt-3" routerLink="/almacen/reportes">Ver Todo el Historial</button>
+            </div>
+        </div>
+    </div>
+
+</div>

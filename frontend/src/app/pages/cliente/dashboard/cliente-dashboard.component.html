@@ -1,0 +1,75 @@
+<div class="cliente-dashboard p-4">
+    <div class="header-cliente mb-4">
+        <h1 class="h3 fw-bold text-marron">Mi Cuenta 🛍️</h1>
+        <p class="text-muted">¡Bienvenido de nuevo, {{ usuario()?.nombre }}! Revisa tus pedidos y favoritos.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h2 class="h5 fw-bold mb-4">📦 Mis Pedidos Recientes</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="small text-muted">
+                            <tr>
+                                <th>ORDEN</th>
+                                <th>FECHA</th>
+                                <th>TOTAL</th>
+                                <th>ESTADO</th>
+                                <th>ACCION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (loading) {
+                            <tr>
+                                <td colspan="5" class="text-center py-3 text-muted">Cargando pedidos...</td>
+                            </tr>
+                            } @else if (pedidos.length === 0) {
+                            <tr>
+                                <td colspan="5" class="text-center py-3 text-muted">No tienes pedidos registrados</td>
+                            </tr>
+                            } @else {
+                            @for (p of pedidos; track p.id) {
+                            <tr>
+                                <td class="fw-bold">{{ p.codigo }}</td>
+                                <td>{{ p.fecha_pedido | date:'dd MMM yyyy' }}</td>
+                                <td class="fw-bold text-success">${{ p.total | number }}</td>
+                                <td>
+                                    <span class="badge" [class]="getEstadoClass(p.estado)">
+                                        {{ p.estado }}
+                                    </span>
+                                </td>
+                                <td><a class="btn btn-sm btn-outline-secondary" routerLink="/cliente/pedidos">Ver</a></td>
+                            </tr>
+                            }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-crema-naranja">
+                <h2 class="h5 fw-bold mb-3">💎 Puntos de Fidelidad</h2>
+                <div class="text-center py-3">
+                    <span class="display-4 fw-bold text-naranja">{{ dataService.puntosFeActuales() | number }}</span>
+                    <p class="mb-0 text-marron fw-bold">Puntos Disponibles</p>
+                </div>
+                
+                <div class="politica-puntos p-3 bg-white rounded-3 mt-3 small text-muted text-start" style="font-size: 0.82rem; border: 1px solid #FFEDD5;">
+                    <p class="fw-bold text-marron mb-1">📢 Política de Fidelidad:</p>
+                    <ul class="ps-3 mb-0" style="margin-left: -5px;">
+                        <li><strong>Acumula el 10%:</strong> Gana el 10% del total de cada compra pagada con dinero.</li>
+                        <li><strong>Canje Directo:</strong> Paga el total de tu carrito usando tus Puntos Fe.</li>
+                        <li><strong>Equivalencia:</strong> 1 Punto Fe = $1 COP.</li>
+                    </ul>
+                </div>
+                
+                <button (click)="canjearPuntos()" class="btn btn-naranja w-100 mt-3 fw-bold py-2 rounded-pill">
+                    Ir a Canjear a la Tienda ➔
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

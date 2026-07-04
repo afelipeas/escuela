@@ -1,0 +1,13 @@
+.text-naranja {
+    color: var(--color-naranja-principal);
+}
+
+.bg-crema-naranja {
+    background-color: #FFF7ED;
+}
+
+.btn-naranja-teach {
+    background: var(--color-naranja-principal);
+    color: white;
+    font-weight: 700;
+}

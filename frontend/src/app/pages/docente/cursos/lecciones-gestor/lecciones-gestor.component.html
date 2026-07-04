@@ -1,0 +1,149 @@
+<div class="lecciones-gestor p-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a routerLink="/docente/cursos">Mis Cursos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ curso()?.titulo || 'Curso' }}</li>
+        </ol>
+    </nav>
+
+    <header class="mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h3 fw-bold mb-1">⚙️ Gestionar Lecciones</h1>
+            <p class="text-muted small mb-0">Curso: <span class="text-primary fw-bold">{{ curso()?.titulo }}</span></p>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4" (click)="abrirModalNuevaLeccion()">
+            + Añadir Lección
+        </button>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="lecciones-list d-flex flex-column gap-3">
+                @for (leccion of lecciones(); track leccion.id) {
+                    <div class="leccion-card bg-white p-3 rounded-4 shadow-sm d-flex align-items-center gap-3 border-start border-5 border-primary">
+                        <div class="leccion-number bg-light rounded-circle fw-bold text-primary">{{ leccion.orden }}</div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1">{{ leccion.titulo }}</h6>
+                            <div class="d-flex gap-3 small text-muted">
+                                @if (leccion.video_url) {
+                                    <span>🎥 Con Video</span>
+                                }
+                                @if (leccion.archivo_apoyo) {
+                                    <span>📄 Con Material</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="actions d-flex align-items-center gap-1">
+                            <a [routerLink]="['/docente/cursos', cursoId, 'lecciones', leccion.id, 'comentarios']"
+                               class="btn btn-light btn-sm rounded-pill px-3 text-muted"
+                               title="Ver comentarios">
+                                💬
+                            </a>
+                            <button class="btn btn-light btn-sm rounded-circle" (click)="abrirEditarLeccion(leccion)">✏️</button>
+                            <button class="btn btn-light btn-sm rounded-circle text-danger" (click)="eliminarLeccion(leccion.id)">🗑️</button>
+                        </div>
+                    </div>
+                } @empty {
+                    <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                        <p class="text-muted mb-0">Aún no has añadido lecciones a este curso.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="course-summary-card bg-white p-4 rounded-4 shadow-sm h-100">
+                <h6 class="fw-bold mb-3">Resumen del Curso</h6>
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="fs-1">{{ curso()?.icono }}</div>
+                    <div>
+                        <div class="fw-bold">{{ curso()?.titulo }}</div>
+                        <div class="small text-muted">{{ lecciones().length }} lecciones</div>
+                    </div>
+                </div>
+                <p class="small text-muted mb-0">{{ curso()?.descripcion }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Lección -->
+    @if (mostrarModal()) {
+        <div class="modal-overlay d-flex align-items-center justify-content-center">
+            <div class="modal-content bg-white p-4 rounded-4 shadow-lg border-0 animate-fade-in" style="max-width: 600px; width: 95%;">
+                <h4 class="fw-bold mb-3">{{ editando() ? '✏️ Editar Lección' : '📖 Nueva Lección' }}</h4>
+
+                @if (mensajeExito()) {
+                    <div class="alert alert-success py-2 px-3 small mb-3">{{ mensajeExito() }}</div>
+                }
+                @if (mensajeError()) {
+                    <div class="alert alert-danger py-2 px-3 small mb-3">{{ mensajeError() }}</div>
+                }
+                
+                <div class="row g-3 mb-3">
+                    <div class="col-md-9">
+                        <label class="form-label small fw-bold">Título de la Lección</label>
+                        <input type="text" class="form-control" [(ngModel)]="nuevaLeccion.titulo" placeholder="Ej: Introducción al Génesis">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Orden</label>
+                        <input type="number" class="form-control" [(ngModel)]="nuevaLeccion.orden">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Descripción / Guión</label>
+                    <textarea class="form-control" [(ngModel)]="nuevaLeccion.descripcion" rows="3" placeholder="Resumen de lo que se enseñará..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">URL del Video (YouTube / Vimeo)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">🎥</span>
+                        <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="nuevaLeccion.video_url" placeholder="https://www.youtube.com/watch?v=... (se convierte automáticamente)">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Sitios Web de Referencia (Opcional - Uno o Varios)</label>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-light border-end-0">🔗</span>
+                        <input type="url" class="form-control border-start-0 ps-0" [(ngModel)]="nuevoSitio" placeholder="Ej: www.wikipedia.org/wiki/..." (keydown.enter)="agregarSitio(); $event.preventDefault()">
+                        <button type="button" class="btn btn-secondary px-3" (click)="agregarSitio()">+ Añadir</button>
+                    </div>
+                    @if (sitiosReferencia.length > 0) {
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            @for (sitio of sitiosReferencia; track $index) {
+                                <span class="badge bg-light text-dark border border-secondary-subtle rounded-pill py-1 px-3 d-flex align-items-center gap-2">
+                                    <span class="text-truncate" style="max-width: 250px;">{{ sitio }}</span>
+                                    <button type="button" class="btn-close" style="font-size: 0.65rem;" (click)="eliminarSitio($index)"></button>
+                                </span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">Material de Apoyo (PDF, JPG, PNG)</label>
+                    <div class="upload-zone border-dashed rounded-4 p-4 text-center bg-light transition-hover" (click)="fileInput.click()">
+                        <input type="file" #fileInput class="d-none" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png">
+                        @if (archivoSeleccionado) {
+                            <div class="text-primary fw-bold">📎 {{ archivoSeleccionado.name }}</div>
+                            <div class="small text-muted mt-1">Haga clic para cambiar el archivo</div>
+                        } @else {
+                            <div class="fs-2 mb-2">📁</div>
+                            <div class="small fw-bold">Arrastra o selecciona un archivo</div>
+                            <div class="text-muted smaller">Máx. 10MB</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary flex-fill rounded-pill py-2 fw-bold" (click)="guardarLeccion()" [disabled]="enviando()">
+                        {{ enviando() ? (subiendoArchivo() ? 'Subiendo material...' : 'Guardando...') : (editando() ? 'Guardar Cambios' : 'Crear Lección') }}
+                    </button>
+                    <button class="btn btn-light flex-fill rounded-pill py-2" (click)="mostrarModal.set(false)">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

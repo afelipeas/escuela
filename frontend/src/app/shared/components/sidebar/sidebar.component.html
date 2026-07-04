@@ -1,0 +1,25 @@
+<aside class="shared-sidebar shadow">
+    <div class="sidebar-header p-4">
+        <div class="logo-circle">
+            @if (usuario()?.rol === 'docente') { 🎓 }
+            @else if (usuario()?.rol === 'vendedor') { 💰 }
+            @else if (usuario()?.rol === 'almacen') { 📦 }
+            @else { 🎒 }
+        </div>
+        <div class="logo-text ms-2">
+            <span class="d-block fw-bold fs-5">Escuela Virtual</span>
+            <span class="smaller opacity-75">Panel de {{ usuario()?.rol | titlecase }}</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav p-2">
+        @for (item of currentMenu(); track item.label) {
+        <a [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+            class="nav-item">
+            <span class="nav-icon">{{ item.icon }}</span>
+            <span class="nav-label">{{ item.label }}</span>
+        </a>
+        }
+    </nav>
+
+</aside>

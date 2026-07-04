@@ -1,0 +1,143 @@
+.proveedores-container {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== TABLA Y AVATAR ===== */
+.avatar-prov {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #78350F, #92400E);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.table th {
+    font-size: 0.75rem;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    border-top: none;
+}
+
+.table td {
+    padding: 1.2rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* ===== ESTADOS Y BOTONES ===== */
+.status-indicator {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: #fee2e2;
+    color: #dc2626;
+    transition: all 0.2s;
+}
+
+.status-indicator.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.btn-naranja-a {
+    background-color: var(--color-naranja-principal);
+    border: none;
+    color: white;
+    transition: all 0.3s;
+}
+
+.btn-naranja-a:hover {
+    background-color: var(--color-naranja-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+}
+
+.btn-icon-edit,
+.btn-icon-delete {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-icon-edit:hover {
+    background: #eff6ff;
+    border-color: #3b82f6;
+}
+
+.btn-icon-delete:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+}
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-card {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.btn-close-p {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #94a3b8;
+}
+
+.modal-header-p {
+    background: #f8fafc;
+}

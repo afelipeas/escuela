@@ -1,0 +1,93 @@
+.nueva-venta-container {
+    max-width: 1100px;
+}
+
+.card-vendedor {
+    border-radius: 20px;
+    border: 1px solid #F1F5F9;
+}
+
+.btn-naranja-v {
+    background: var(--color-naranja-principal);
+    color: white;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-naranja-v:disabled {
+    opacity: 0.7;
+}
+
+.btn-outline-marron {
+    border: 2px solid var(--color-marron-oscuro);
+    color: var(--color-marron-oscuro);
+    font-weight: 700;
+    border-radius: 12px;
+}
+
+.btn-outline-marron:hover {
+    background: var(--color-marron-oscuro);
+    color: white;
+}
+
+.vendedor-table th {
+    border: none;
+    font-size: 0.8rem;
+    color: #94A3B8;
+    text-transform: uppercase;
+    padding: 0.75rem 0.5rem;
+}
+
+.vendedor-table td {
+    padding: 0.5rem;
+    border-top: 1px solid #F1F5F9;
+    vertical-align: middle;
+}
+
+.form-label {
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.form-select-sm, .form-control-sm {
+    border-radius: 8px;
+    border-color: #E2E8F0;
+}
+
+.form-control.bg-light {
+    background-color: #F8FAFC !important;
+}
+
+.alert {
+    border-radius: 12px;
+}
+
+.toast-success {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    padding: 1rem 1.5rem;
+    background: #198754;
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100px); }
+}

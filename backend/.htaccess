@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Si el archivo o directorio existe físicamente, servirlo directo
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Asegurar que el header Authorization pase a PHP (necesario en muchos servidores Apache)
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+    # Si no existe, mandar todo a index.php para que el API lo procese
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

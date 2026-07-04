@@ -1,0 +1,39 @@
+<div class="calendario-container p-4">
+
+    <header class="cal-header mb-4 d-flex justify-content-between align-items-center bg-white p-4 rounded-4 shadow-sm">
+        <div>
+            <h1 class="h3 fw-bold text-marron mb-1">Mi Calendario</h1>
+            <p class="text-muted small mb-0">Organiza tu tiempo para no perderte ninguna clase</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-marron rounded-circle" (click)="cambiarMes(-1)">◀</button>
+            <h4 class="mb-0 fw-bold" style="min-width: 160px; text-align: center;">{{ mesActual() }}</h4>
+            <button class="btn btn-outline-marron rounded-circle" (click)="cambiarMes(1)">▶</button>
+        </div>
+    </header>
+
+    <div class="calendar-grid-wrap bg-white rounded-4 shadow-sm p-4">
+        <div class="calendar-days-header mb-3">
+            <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+        </div>
+        <div class="calendar-days-grid">
+            <!-- Espacios vacios dinámicos para el offset del mes -->
+            @for (vacia of celdasVacias; track $index) {
+                <div class="day-cell empty"></div>
+            }
+
+            @for (dia of diasMes; track dia) {
+                <div class="day-cell" [class.has-event]="getEvento(dia)">
+                    <span class="day-number">{{ dia }}</span>
+                    @if (getEvento(dia); as ev) {
+                        <div class="event-pill" [class]="ev.color">
+                            <span class="ev-title">{{ ev.titulo }}</span>
+                            <span class="ev-time">{{ ev.hora }}</span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

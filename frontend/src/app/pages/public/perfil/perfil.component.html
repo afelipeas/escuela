@@ -1,0 +1,170 @@
+<div class="perfil-page min-vh-100">
+    <div class="container py-4">
+        <!-- HEADER SIMPLE -->
+        <header class="mb-4">
+            <h1 class="h3 fw-bold text-marron">Configuración de Cuenta</h1>
+            <p class="text-muted small">Gestiona tu información personal y seguridad</p>
+        </header>
+        <div class="row g-4">
+
+            <!-- LATERAL: INFO RESUMIDA Y MENU -->
+            <aside class="col-lg-4 col-xl-3">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+                    <div class="perfil-header-info text-center p-4">
+                        <div class="avatar-grande mx-auto shadow-sm">{{ usuario.foto }}</div>
+                        <h2 class="h5 fw-bold mt-3 mb-1">{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+                        <span class="badge-rol mb-3 d-inline-block">{{ usuario.rol }}</span>
+                        <p class="text-muted small">Miembro desde: {{ usuario.fechaRegistro }}</p>
+                    </div>
+
+                    <div class="perfil-menu d-flex flex-column border-top">
+                        <button class="m-link" [class.active]="seccionActiva === 'general'"
+                            (click)="seccionActiva = 'general'">
+                            <span class="m-icon">👤</span> Datos Personales
+                        </button>
+                        <button class="m-link" [class.active]="seccionActiva === 'seguridad'"
+                            (click)="seccionActiva = 'seguridad'">
+                            <span class="m-icon">🔐</span> Seguridad
+                        </button>
+                        <button class="m-link" [class.active]="seccionActiva === 'preferencias'"
+                            (click)="seccionActiva = 'preferencias'">
+                            <span class="m-icon">⚙️</span> Preferencias
+                        </button>
+                    </div>
+                </div>
+
+                @if (authService.currentUser()?.rol === 'estudiante') {
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-marron-dark text-white">
+                        <h3 class="h6 fw-bold mb-3">Tu Progreso</h3>
+                        <div class="mb-2 d-flex justify-content-between small">
+                            <span>Nivel de Aprendizaje</span>
+                            <span>75%</span>
+                        </div>
+                        <div class="progress-p mb-4">
+                            <div class="progress-p-bar" style="width: 75%"></div>
+                        </div>
+                        <a routerLink="/estudiante/logros" class="btn btn-light-orange w-100 btn-sm fw-bold text-decoration-none">Ver Mis Logros 🏆</a>
+                    </div>
+                }
+            </aside>
+
+            <!-- PRINCIPAL: FORMULARIOS -->
+            <main class="col-lg-8 col-xl-9">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white h-100">
+
+                    @if (mensajeExito) {
+                    <div class="alert alert-success border-0 shadow-sm rounded-3 d-flex align-items-center gap-2 mb-4">
+                        <span>✅</span> {{ mensajeExito }}
+                    </div>
+                    }
+
+                    <!-- SECCIÓN: GENERAL -->
+                    @if (seccionActiva === 'general') {
+                    <section class="seccion-animada">
+                        <h2 class="h4 fw-bold mb-4 text-marron">Información Personal</h2>
+                        <form (ngSubmit)="guardarPerfil()">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Nombre</label>
+                                    <input type="text" class="form-control rounded-3" [(ngModel)]="perfilEdit.nombre"
+                                        name="nombre">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Apellido</label>
+                                    <input type="text" class="form-control rounded-3" [(ngModel)]="perfilEdit.apellido"
+                                        name="apellido">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Correo Electrónico</label>
+                                    <input type="email" class="form-control rounded-3" [(ngModel)]="perfilEdit.email"
+                                        name="email">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Teléfono</label>
+                                    <input type="text" class="form-control rounded-3" [(ngModel)]="perfilEdit.telefono"
+                                        name="telefono">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Biografía</label>
+                                    <textarea class="form-control rounded-3" rows="3" [(ngModel)]="perfilEdit.biografia"
+                                        name="bio"></textarea>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-top">
+                                <button type="submit" class="btn btn-naranja px-5 py-2 rounded-pill fw-bold">Actualizar
+                                    Datos</button>
+                            </div>
+                        </form>
+                    </section>
+                    }
+
+                    <!-- SECCIÓN: SEGURIDAD -->
+                    @if (seccionActiva === 'seguridad') {
+                    <section class="seccion-animada">
+                        <h2 class="h4 fw-bold mb-4 text-marron">Seguridad y Contraseña</h2>
+                        <p class="text-muted small mb-4">Recomendamos usar una contraseña de al menos 8 caracteres con
+                            números y símbolos.</p>
+
+                        <form (ngSubmit)="cambiarPassword()">
+                            <div class="row g-3" style="max-width: 500px;">
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Contraseña Actual</label>
+                                    <input type="password" class="form-control rounded-3"
+                                        [(ngModel)]="passwordEdit.actual" name="actual">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Nueva Contraseña</label>
+                                    <input type="password" class="form-control rounded-3"
+                                        [(ngModel)]="passwordEdit.nueva" name="nueva">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Confirmar Nueva
+                                        Contraseña</label>
+                                    <input type="password" class="form-control rounded-3"
+                                        [(ngModel)]="passwordEdit.confirmar" name="confirmar">
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-top">
+                                <button type="submit" class="btn btn-marron px-5 py-2 rounded-pill fw-bold">Cambiar
+                                    Contraseña</button>
+                            </div>
+                        </form>
+                    </section>
+                    }
+
+                    <!-- SECCIÓN: PREFERENCIAS -->
+                    @if (seccionActiva === 'preferencias') {
+                    <section class="seccion-animada">
+                        <h2 class="h4 fw-bold mb-4 text-marron">Preferencias del Sistema</h2>
+
+                        <div class="d-grid gap-4 mt-2">
+                            <div
+                                class="pref-item d-flex justify-content-between align-items-center p-3 rounded-3 bg-light border">
+                                <div>
+                                    <p class="mb-0 fw-bold">Notificaciones por Correo</p>
+                                    <small class="text-muted">Recibe avisos sobre nuevas tareas y eventos.</small>
+                                </div>
+                                <div class="form-check form-switch fs-4">
+                                    <input class="form-check-input" type="checkbox" checked>
+                                </div>
+                            </div>
+                            <div
+                                class="pref-item d-flex justify-content-between align-items-center p-3 rounded-3 bg-light border">
+                                <div>
+                                    <p class="mb-0 fw-bold">Perfil Público</p>
+                                    <small class="text-muted">Permitir que otros alumnos vean mis medallas.</small>
+                                </div>
+                                <div class="form-check form-switch fs-4">
+                                    <input class="form-check-input" type="checkbox">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    }
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+</div>

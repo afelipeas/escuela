@@ -1,0 +1,53 @@
+.leccion-card {
+    transition: transform 0.2s ease;
+}
+
+.leccion-card:hover {
+    transform: translateX(5px);
+}
+
+.leccion-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.border-dashed {
+    border: 2px dashed #dee2e6;
+}
+
+.upload-zone {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upload-zone:hover {
+    border-color: #0d6efd;
+    background-color: #f0f7ff !important;
+}
+
+.smaller {
+    font-size: 0.75rem;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1050;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}

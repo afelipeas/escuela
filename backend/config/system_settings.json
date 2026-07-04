@@ -1,0 +1,19 @@
+{
+    "general": {
+        "nombre_plataforma": "Escuela Dominical Virtual",
+        "lema": "Instruye al niño en su camino, y aun cuando fuere viejo no se apartará de él.",
+        "periodo_activo": "Primer Semestre 2026",
+        "email_contacto": "soporte@escueladominical.com"
+    },
+    "puntos": {
+        "puntos_leccion": 50,
+        "puntos_curso": 200,
+        "puntos_asistencia": 25
+    },
+    "toggles": {
+        "tienda_activa": true,
+        "notificaciones_activas": true,
+        "comentarios_lecciones": true,
+        "registro_abierto": true
+    }
+}

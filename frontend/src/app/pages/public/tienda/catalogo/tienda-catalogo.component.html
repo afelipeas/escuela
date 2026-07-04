@@ -1,0 +1,198 @@
+<div class="store-catalog-page">
+
+    <!-- NAVBAR TIENDA -->
+    <nav class="navbar navbar-expand-lg border-bottom bg-white sticky-top">
+        <div class="container py-2">
+            <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+                <div class="logo-circle">✝</div>
+                <span class="fw-bold text-marron">Tienda Virtual</span>
+            </a>
+
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                @if (authService.currentUser()) {
+                    <a class="btn btn-volver-panel d-flex align-items-center gap-2 px-3 py-2 rounded-pill text-decoration-none fw-bold" [routerLink]="authService.getDashboardRoute()">
+                        <span>⬅️</span>
+                        <span class="d-none d-sm-inline">Volver a mi Panel</span>
+                    </a>
+                }
+                <div class="search-bar-wrap d-none d-md-block">
+                    <input type="text" [ngModel]="textoBusqueda" (ngModelChange)="actualizarBusqueda($event)"
+                        (focus)="onBusquedaFocus()" placeholder="Buscar productos..." autocomplete="off">
+                    <span class="search-icon">
+                        @if (buscando()) {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                        } @else {
+                            🔍
+                        }
+                    </span>
+
+                    @if (mostrarSugerencias() && sugerencias().length > 0) {
+                        <div class="sugerencias-dropdown">
+                            @for (prod of sugerencias(); track prod.id) {
+                                <a class="sugerencia-item" (click)="seleccionarSugerencia(prod)">
+                                    <div class="sugerencia-img">
+                                        @if (prod.imagen_url && prod.imagen_url.startsWith('http')) {
+                                            <img [src]="prod.imagen_url" alt="">
+                                        } @else {
+                                            <span>{{ prod.imagen_url || '🎁' }}</span>
+                                        }
+                                    </div>
+                                    <div class="sugerencia-info">
+                                        <span class="sugerencia-nombre">{{ prod.nombre }}</span>
+                                        <span class="sugerencia-precio">${{ prod.precio | number }}</span>
+                                    </div>
+                                </a>
+                            }
+                            <a class="sugerencia-ver-todas" (click)="onBuscarEnter()">
+                                Ver todos los resultados para "{{ textoBusqueda }}"
+                            </a>
+                        </div>
+                    }
+
+                    @if (mostrarSugerencias() && textoBusqueda.length >= 2 && sugerencias().length === 0 && !buscando()) {
+                        <div class="sugerencias-dropdown">
+                            <div class="sugerencia-vacia">
+                                <span>No se encontraron productos</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <button class="cart-btn position-relative" routerLink="/tienda/carrito">
+                    🛒
+                    @if (dataService.cartCount() > 0) {
+                        <span class="badge-count">{{ dataService.cartCount() }}</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BANNER DE BIENVENIDA -->
+    <section class="store-hero py-5 text-center text-white">
+        <div class="container">
+            <h1 class="display-5 fw-bold mb-3">Recursos para Crecer en la Fe</h1>
+            <p class="lead mb-4">Descubre biblias, materiales de apoyo y accesorios para los más pequeños.</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <div class="row">
+
+            <!-- FILTROS LATERALES -->
+            <aside class="col-lg-3 mb-4">
+                <div class="filter-card p-4 shadow-sm bg-white rounded-4 sticky-top-custom">
+                    <h2 class="h6 fw-bold mb-4">Categorías</h2>
+                    <div class="category-list d-flex flex-column gap-2">
+                        @for (cat of categorias; track cat.nombre) {
+                        <button class="category-btn" [class.active]="categoriaSeleccionada() === cat.nombre"
+                            (click)="seleccionarCategoria(cat.nombre)">
+                            <span class="cat-icon">{{ cat.icono }}</span>
+                            <span class="cat-name">{{ cat.nombre }}</span>
+                        </button>
+                        }
+                    </div>
+
+                    <hr class="my-4 op-10">
+
+                    <h2 class="h6 fw-bold mb-3">Filtrar por Precio</h2>
+                    <div class="price-display mb-2">
+                        <span class="small text-muted">Desde:</span>
+                        <span class="fw-bold text-orange ms-1">${{ precioMin() | number }}</span>
+                    </div>
+                    <input type="range" class="form-range custom-range" 
+                        min="5000" max="150000" step="5000"
+                        [ngModel]="precioMin()" (ngModelChange)="precioMin.set($event)">
+                    <div class="d-flex justify-content-between x-small text-muted mt-1">
+                        <span>$5k (Mín)</span>
+                        <span>$150k</span>
+                    </div>
+
+                    <button (click)="aplicarFiltros()" class="btn btn-marron-w w-100 mt-4 d-flex align-items-center justify-content-center gap-2">
+                        @if (cargando()) {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                        }
+                        <span>Aplicar Filtros</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- GRID DE PRODUCTOS -->
+            <main class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <p class="mb-0 text-muted">
+                        @if (cargando()) {
+                            Cargando productos...
+                        } @else {
+                            Mostrando <strong>{{ productosFiltrados().length }}</strong> productos
+                        }
+                    </p>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="small text-muted">Ordenar por:</span>
+                        <select class="form-select form-select-sm sort-select" 
+                                [ngModel]="ordenSeleccionado()" 
+                                (ngModelChange)="ordenSeleccionado.set($event); aplicarFiltros()">
+                            <option value="precio ASC">Precio: Menor a Mayor</option>
+                            <option value="precio DESC">Precio: Mayor a Menor</option>
+                            <option value="nombre ASC">Nombre: A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                @if (cargando()) {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-orange" role="status"></div>
+                    </div>
+                } @else if (productosFiltrados().length > 0) {
+                    <div class="row g-4">
+                        @for (prod of productosFiltrados(); track prod.id) {
+                        <div class="col-md-6 col-xl-4">
+                            <div class="product-card h-100 shadow-sm bg-white rounded-4 overflow-hidden border">
+                                <a [routerLink]="['/tienda/producto', prod.id]" class="text-decoration-none">
+                                    <div class="product-img-wrap">
+                                        @if (prod.etiqueta) {
+                                            <span class="product-tag" [class]="prod.etiqueta.toLowerCase()">{{ prod.etiqueta }}</span>
+                                        }
+                                        <div class="product-img-placeholder">
+                                            @if (prod.imagen_url && prod.imagen_url.startsWith('http')) {
+                                                <img [src]="prod.imagen_url" alt="" style="width:100%;height:100%;object-fit:cover;">
+                                            } @else {
+                                                {{ prod.imagen_url || '🎁' }}
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="product-body p-3">
+                                        <p class="cat-label mb-1">{{ prod.categoria }}</p>
+                                        <h3 class="product-title h6 fw-bold text-marron">{{ prod.nombre }}</h3>
+                                        <p class="product-desc small text-muted mb-3 text-truncate">{{ prod.descripcion }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="product-price fw-bold text-orange">${{ prod.precio | number }}</span>
+                                            <button
+                                                (click)="$event.preventDefault(); $event.stopPropagation(); agregarAlCarrito(prod)"
+                                                class="btn-add-cart">
+                                                <span>Añadir</span> 🛒
+                                            </button>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                } @else {
+                    <div class="text-center py-5">
+                        <div class="fs-1 mb-3">🔍</div>
+                        <h3>No encontramos productos</h3>
+                        <p class="text-muted">Intenta con otros términos o categorías.</p>
+                        <button (click)="seleccionarCategoria('Todos')" class="btn btn-naranja">Ver todo el catálogo</button>
+                    </div>
+                }
+            </main>
+
+        </div>
+    </div>
+
+    <footer class="bg-white border-top py-4 text-center">
+        <p class="text-muted small mb-0">© 2026 Escuela Dominical Virtual · Tienda de Recursos Cristianos</p>
+    </footer>
+
+</div>
