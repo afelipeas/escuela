@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://escueladominical.infinityfree.io/backend/api',
+  apiUrl: 'https://escuela-dominical-mjqr.onrender.com/api',
 };
