@@ -41,3 +41,4 @@ define('DB_HOST', getenv('DB_HOST') ?: 'sql303.infinityfree.com');
 define('DB_NAME', getenv('DB_NAME') ?: 'if0_42322538_escuela_dominical_db');
 define('DB_USER', getenv('DB_USER') ?: 'if0_42322538');
 define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '131174fj');
+define('DB_PORT', getenv('DB_PORT') ?: '3306');

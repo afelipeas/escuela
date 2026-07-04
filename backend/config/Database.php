@@ -40,26 +40,26 @@ class Database
     {
         if (self::$instancia === null) {
             try {
-                // Usar los valores de app.php si están disponibles, sino los valores por defecto
                 $host    = defined('DB_HOST')     ? DB_HOST     : 'localhost';
                 $nombre  = defined('DB_NAME')     ? DB_NAME     : 'escuela_dominical_db';
                 $usuario = defined('DB_USER')     ? DB_USER     : 'root';
                 $pass    = defined('DB_PASSWORD') ? DB_PASSWORD : '';
+                $port    = defined('DB_PORT')     ? DB_PORT     : '3306';
 
-                $dsn = "mysql:host={$host};dbname={$nombre};charset=utf8mb4";
+                $dsn = "mysql:host={$host};port={$port};dbname={$nombre};charset=utf8mb4";
 
-                self::$instancia = new PDO($dsn, $usuario, $pass, [
-                    // Lanzar excepciones automáticamente en caso de error SQL
+                $options = [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-
-                    // Devolver los datos como arrays asociativos por defecto
-                    // Ej: $fila['nombre'] en lugar de $fila[0]
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-
-                    // Desactivar la emulación de prepared statements
-                    // Esto hace las consultas más seguras contra SQL Injection
                     PDO::ATTR_EMULATE_PREPARES => false,
-                ]);
+                ];
+
+                // TiDB Cloud requiere SSL
+                if (getenv('DB_SSL') || $port === '4000') {
+                    $options[PDO::MYSQL_ATTR_SSL_CA] = true;
+                }
+
+                self::$instancia = new PDO($dsn, $usuario, $pass, $options);
 
             } catch (PDOException $e) {
                 // En producción, nunca mostrar el error real al usuario
