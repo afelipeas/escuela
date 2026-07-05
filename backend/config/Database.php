@@ -56,6 +56,7 @@ class Database
 
                 // TiDB Cloud requiere SSL
                 if (getenv('DB_SSL') || $port === '4000') {
+                    $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
                     $options[PDO::MYSQL_ATTR_SSL_CA] = true;
                 }
 
