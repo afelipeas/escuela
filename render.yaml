@@ -1,10 +1,14 @@
 services:
   - type: web
     name: escuela-dominical-api
-    runtime: php
-    rootDir: backend
-    buildCommand: ""
-    startCommand: "php -S 0.0.0.0:$PORT router.php"
+    runtime: Docker
     envVars:
       - key: APP_ENV
         value: production
+      # Configurar en Render Dashboard:
+      # - DB_HOST (host de TiDB Cloud, ej: gateway01.us-east-1.prod.aws.tidbcloud.com)
+      # - DB_NAME (nombre de la base de datos)
+      # - DB_USER (usuario de TiDB Cloud)
+      # - DB_PASSWORD (contraseña de TiDB Cloud)
+      # - DB_PORT: 4000
+      # - DB_SSL: true

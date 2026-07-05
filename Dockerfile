@@ -6,6 +6,6 @@ WORKDIR /app
 
 COPY backend/ .
 
-EXPOSE $PORT
+EXPOSE 10000
 
 CMD ["sh", "-c", "php -S 0.0.0.0:$PORT router.php"]
