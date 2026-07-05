@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: escuela-dominical-api
+    name: escuela-dominical
     runtime: Docker
     envVars:
       - key: APP_ENV
